@@ -1,0 +1,13 @@
+{
+    "name": "nodejs-jenkins-api",
+        "version": "0.1",
+        "description": "Jenkins API written in Node.js",
+        "author": "Shawn Jansepar <shawnjan@gmail.com>",
+        "dependencies": {
+            "request": ">= 2.2.9",
+        },  
+        "repository" : { 
+            "type" : "git",
+            "url" : "git@github.com:jansepar/nodejs-jenkins-api.git"
+        },  
+}
