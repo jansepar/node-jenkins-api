@@ -16,5 +16,6 @@
         ],
     "engine": {
         "node": ">=0.4"
-    }
+    },
+    "main": "./lib/main.js"
 }
