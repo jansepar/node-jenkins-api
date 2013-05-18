@@ -1,21 +1,25 @@
 {
-    "name": "jenkins-api",
-    "version": "0.1.0",
-    "description": "Jenkins API written in Node.js",
-    "author": "Shawn Jansepar <shawnjan@gmail.com>",
-    "dependencies": {
-        "request": ">= 2.2.9"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:jansepar/nodejs-jenkins-api.git"
-    },
-    "keywords": [
-        "github",
+  "name": "jenkins-api",
+  "version": "0.1.1",
+  "description": "Jenkins API written in Node.js",
+  "author": "Shawn Jansepar <shawnjan@gmail.com>",
+  "dependencies": {
+    "request": ">= 2.2.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jansepar/nodejs-jenkins-api.git"
+  },
+  "keywords": [
+    "github",
     "jenkins"
-        ],
-    "engine": {
-        "node": ">=0.4"
-    },
-    "main": "./lib/main.js"
+  ],
+  "engine": {
+    "node": ">=0.4"
+  },
+  "main": "./lib/main.js",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-release": "~0.3.3"
+  }
 }
