@@ -1,18 +1,10 @@
 nodejs-jenkins-api
 =================
 
-We needed a middleman server, and I decided to go with Node.js, but I found that there was no decent Node.js API. SO, I made one =). I was really impressed by the autojenkins python API, which it follows closely:
-
-https://github.com/txels/autojenkins
-
-There are many things you can do, such as:
-
 ## Install
 
 <pre>
-git clone git@github.com:jansepar/node-jenkins-api.git
-cd node-jenkins-api
-npm link
+npm install jenkins-api
 </pre>
 
 ## Usage
@@ -20,7 +12,7 @@ npm link
 ### setup
 
 ```javascript
-var jenkinsapi = require('./jenkinsapi');
+var jenkinsapi = require('jenkins-api');
 
 var jenkins = jenkinsapi.init("http://jenkins.yoursite.com");
 // or with auth
@@ -112,6 +104,11 @@ jenkins.last_result('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+
+## Notes
+
+Modeled after the [Python Jenkins API](https://github.com/txels/autojenkins)
+
 
 
 
