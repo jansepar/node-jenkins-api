@@ -35,6 +35,15 @@ jenkins.job_info('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+### build info
+
+```javascript
+jenkins.build_info('job-in-jenkins', 'build-number', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### last build info
 
 ```javascript
