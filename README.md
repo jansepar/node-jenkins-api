@@ -114,6 +114,14 @@ jenkins.last_result('job-in-jenkins', function(err, data) {
 });
 ```
 
+### job output
+```javascript
+jenkins.job_output('job-in-jenkins', 'buildname', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ## Notes
 
 Modeled after the [Python Jenkins API](https://github.com/txels/autojenkins)
