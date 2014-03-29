@@ -114,6 +114,23 @@ jenkins.last_result('job-in-jenkins', function(err, data) {
 });
 ```
 
+### get all queued items
+```javascript
+jenkins.queue(function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+### get all jenkins computers (aka workers)
+```javascript
+jenkins.computers(function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+
 ## Notes
 
 Modeled after the [Python Jenkins API](https://github.com/txels/autojenkins)
