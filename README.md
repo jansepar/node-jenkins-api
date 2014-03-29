@@ -114,14 +114,21 @@ jenkins.last_result('job-in-jenkins', function(err, data) {
 });
 ```
 
+<<<<<<< HEAD
 ### get all queued items
 ```javascript
 jenkins.queue(function(err, data) {
+=======
+### job output
+```javascript
+jenkins.job_output('job-in-jenkins', 'buildname', function(err, data) {
+>>>>>>> origin/master
   if (err){ return console.log(err); }
   console.log(data)
 });
 ```
 
+<<<<<<< HEAD
 ### get all jenkins computers (aka workers)
 ```javascript
 jenkins.computers(function(err, data) {
@@ -131,6 +138,8 @@ jenkins.computers(function(err, data) {
 ```
 
 
+=======
+>>>>>>> origin/master
 ## Notes
 
 Modeled after the [Python Jenkins API](https://github.com/txels/autojenkins)
