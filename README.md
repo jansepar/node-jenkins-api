@@ -35,6 +35,23 @@ jenkins.job_info('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+### enable job
+
+```javascript
+jenkins.enable_job('job-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+### disable job
+
+```javascript
+jenkins.disable_job('job-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### build info
 
 ```javascript
