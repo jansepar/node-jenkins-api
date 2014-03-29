@@ -35,6 +35,23 @@ jenkins.job_info('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+### enable job
+
+```javascript
+jenkins.enable_job('job-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+### disable job
+
+```javascript
+jenkins.disable_job('job-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### build info
 
 ```javascript
@@ -121,6 +138,23 @@ jenkins.job_output('job-in-jenkins', 'buildname', function(err, data) {
   console.log(data)
 });
 ```
+
+### get all queued items
+```javascript
+jenkins.queue(function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+### get all jenkins computers (aka workers)
+```javascript
+jenkins.computers(function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 
 ## Notes
 

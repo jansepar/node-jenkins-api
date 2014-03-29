@@ -1,10 +1,11 @@
 module.exports = function(grunt) {
 
-  // Project configuration.
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-  });
+    // Project configuration.
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+    });
 
-  grunt.loadNpmTasks('grunt-release');
+
+    grunt.loadNpmTasks('grunt-release');
 
 };
