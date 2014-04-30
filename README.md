@@ -52,6 +52,24 @@ jenkins.disable_job('job-in-jenkins', function(err, data) {
 });
 ```
 
+### build
+
+```javascript
+jenkins.build('job-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+### build with params
+
+```javascript
+jenkins.build('job-in-jenkins', {key: 'value'}, function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### build info
 
 ```javascript
