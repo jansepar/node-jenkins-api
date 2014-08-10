@@ -1,6 +1,6 @@
 {
   "name": "jenkins-api",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Jenkins API written in Node.js",
   "author": "Shawn Jansepar <shawnjan@gmail.com>",
   "dependencies": {
