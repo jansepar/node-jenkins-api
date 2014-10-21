@@ -116,7 +116,7 @@ jenkins.copy_job('job-to-copy'
                     // the new config xml for the new job
                     return config.replace('development','feature-branch');
                 }
-                ,function(error, data) {
+                ,function(err, data) {
                       // if no error, job was copied
                       if (err){ return console.log(err); }
                       console.log(data)
