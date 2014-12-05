@@ -14,9 +14,15 @@ npm install jenkins-api
 ```javascript
 var jenkinsapi = require('jenkins-api');
 
+// no auth
 var jenkins = jenkinsapi.init("http://jenkins.yoursite.com");
-// or with auth
+
+// username/password
 var jenkins = jenkinsapi.init("http://username:password@jenkins.yoursite.com");
+
+// API Token
+var jenkins = jenkinsapi.init('https://username:token@jenkins.company.com');
+
 ```
 
 ### all jobs
