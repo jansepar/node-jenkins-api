@@ -179,6 +179,16 @@ jenkins.computers(function(err, data) {
 });
 ```
 
+## Default configuration
+
+You can set the default configuration which will be use in all HTTP requests by calling init with the additional options parameter:
+
+```javascript
+// default request options
+var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {strictSSL: false});
+```
+
+Since node-jenkins-api uses [request/request](https://github.com/request/request) as HTTP client, please refer to the documentation for available options.
 
 ## Notes
 
