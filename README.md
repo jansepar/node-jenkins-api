@@ -69,7 +69,7 @@ jenkins.build('job-in-jenkins', function(err, data) {
 ### stop build
 
 ```javascript
-jenkins.stopBuild('job-in-jenkins', 'build-number',function(err, data) {
+jenkins.stop_build('job-in-jenkins', 'build-number',function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
