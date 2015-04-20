@@ -66,6 +66,15 @@ jenkins.build('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+### stop build
+
+```javascript
+jenkins.stop_build('job-in-jenkins', 'build-number',function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 
 ### build with params
 
