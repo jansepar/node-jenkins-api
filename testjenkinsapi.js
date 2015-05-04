@@ -8,12 +8,24 @@ var jenkinsapi = require('./lib/main');
 
 var jenkins = jenkinsapi.init("http://localhost:8080");
 
+/*
 jenkins.build('test', function(error, data) {
     if (error) {
         console.log(error);
     }
     console.log(data);
 });
+*/
+
+/*
+var view_name = "test";
+jenkins.all_jobs_in_view(view_name, function (error, data) {
+    if (error) {
+        console.log(error);
+    }
+    console.log(data);
+});
+*/
 
 /*
 jenkins.all_jobs(function(error, data) { console.log(data)});
