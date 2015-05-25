@@ -41,6 +41,14 @@ jenkins.job_info('job-in-jenkins', function(err, data) {
   console.log(data)
 });
 ```
+### view info
+
+```javascript
+jenkins.view_info('view-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
 ### enable job
 
 ```javascript
