@@ -188,6 +188,21 @@ jenkins.computers(function(err, data) {
 });
 ```
 
+### update existing job configuration
+```javascript
+jenkins.update_config('job-to-update'
+                ,function(config) {
+                    // function which takes the config.xml, and returns
+                    // the new config xml for the new job
+                    return config.replace('development','feature-branch');
+                }
+                ,function(err, data) {
+                      // if no error, job was copied
+                      if (err){ return console.log(err); }
+                      console.log(data)
+                });
+```
+
 ## Default configuration
 
 You can set the default configuration which will be use in all HTTP requests by calling init with the additional options parameter:
