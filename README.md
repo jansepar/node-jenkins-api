@@ -188,6 +188,15 @@ jenkins.computers(function(err, data) {
 });
 ```
 
+### get all jobs in view
+
+```javascript
+jenkins.all_jobs_in_view('view-in-jenkins', function(err, data) {
+      if (err){ return console.log(err); }
+        console.log(data)
+});
+```
+
 ## Default configuration
 
 You can set the default configuration which will be use in all HTTP requests by calling init with the additional options parameter:
