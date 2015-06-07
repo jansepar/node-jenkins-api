@@ -121,6 +121,22 @@ jenkins.get_config_xml('job-in-jenkins', function(err, data) {
 });
 ```
 
+### update job
+
+```javascript
+jenkins.update_job('job-to-update',
+                   function(config) {
+                       // function which takes the config.xml, and returns
+                       // the new config xml for the job
+                       return config.replace('development,'feature-branch');
+                   }
+                   ,function(err, data) {
+                       // if no error, job was copied
+                       if (err){ return console.log(err); }
+                       console.log(data)
+                   });
+```
+
 ### copy job
 
 ```javascript
