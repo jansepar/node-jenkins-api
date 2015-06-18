@@ -213,6 +213,44 @@ jenkins.all_jobs_in_view('view-in-jenkins', function(err, data) {
 });
 ```
 
+### create view
+
+```javascript
+jenkins.create_view('new-view-name', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+### update view
+
+```javascript
+var viewConfig = {
+            name: "view-in-jenkins",
+            "description": "This is the view-in-jenkins View",
+            "statusFilter": "",
+            "job-in-jenkins": true,
+            "useincluderegex": true,
+            "includeRegex": "prefix.*",
+            "columns": [{"stapler-class": "hudson.views.StatusColumn", "$class": "hudson.views.StatusColumn"}, {"stapler-class": "hudson.views.WeatherColumn", "$class": "hudson.views.WeatherColumn"}, {"stapler-class": "hudson.views.JobColumn", "$class": "hudson.views.JobColumn"}, {"stapler-class": "hudson.views.LastSuccessColumn", "$class": "hudson.views.LastSuccessColumn"}, {"stapler-class": "hudson.views.LastFailureColumn", "$class": "hudson.views.LastFailureColumn"}, {"stapler-class": "hudson.views.LastDurationColumn", "$class": "hudson.views.LastDurationColumn"}, {"stapler-class": "hudson.views.BuildButtonColumn", "$class": "hudson.views.BuildButtonColumn"}]
+        };
+
+jenkins.update_view('view-in-jenkins', viewConfig, function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+### delete view
+
+```javascript
+jenkins.delete_view('view-in-jenkins', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
+
 ## Default configuration
 
 You can set the default configuration which will be use in all HTTP requests by calling init with the additional options parameter:
