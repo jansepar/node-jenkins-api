@@ -222,6 +222,13 @@ You can set the default configuration which will be use in all HTTP requests by 
 var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {strictSSL: false});
 ```
 
+Futhermore, you can set your remote job token for authentication:
+
+```javascript
+// default request options
+var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {strictSSL: false}, '<job_token_here>');
+```
+
 Since node-jenkins-api uses [request/request](https://github.com/request/request) as HTTP client, please refer to the documentation for available options.
 
 ## Notes
