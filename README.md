@@ -163,6 +163,15 @@ jenkins.delete_job('job-in-jenkins', function(err, data) {
 });
 ```
 
+### delete build data for job
+
+```javascript
+jenkins.delete_build('job-in-jenkins', 'build-number', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### last success
 
 ```javascript
