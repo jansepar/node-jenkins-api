@@ -205,6 +205,14 @@ jenkins.queue(function(err, data) {
 });
 ```
 
+### get one queued item
+```javascript
+jenkins.queue_item('queue-item-number', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### get all jenkins computers (aka workers)
 ```javascript
 jenkins.computers(function(err, data) {
