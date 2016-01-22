@@ -25,6 +25,8 @@ var jenkins = jenkinsapi.init('https://username:token@jenkins.company.com');
 
 ```
 
+If you need additional request parameters you can add them as explained in 'optional' section.
+
 ### all jobs
 
 ```javascript
@@ -36,7 +38,7 @@ jenkins.all_jobs(function(err, data) {
 ### job info
 
 ```javascript
-jenkins.job_info('job-in-jenkins', function(err, data) {
+jenkins.job_info('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -44,7 +46,7 @@ jenkins.job_info('job-in-jenkins', function(err, data) {
 ### enable job
 
 ```javascript
-jenkins.enable_job('job-in-jenkins', function(err, data) {
+jenkins.enable_job('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -52,7 +54,7 @@ jenkins.enable_job('job-in-jenkins', function(err, data) {
 ### disable job
 
 ```javascript
-jenkins.disable_job('job-in-jenkins', function(err, data) {
+jenkins.disable_job('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -61,7 +63,7 @@ jenkins.disable_job('job-in-jenkins', function(err, data) {
 ### build
 
 ```javascript
-jenkins.build('job-in-jenkins', function(err, data) {
+jenkins.build('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -79,7 +81,7 @@ jenkins.stop_build('job-in-jenkins', 'build-number',function(err, data) {
 ### build with params
 
 ```javascript
-jenkins.build('job-in-jenkins', {key: 'value'}, function(err, data) {
+jenkins.build('job-in-jenkins', {key: 'value'}, (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -88,7 +90,7 @@ jenkins.build('job-in-jenkins', {key: 'value'}, function(err, data) {
 ### build info
 
 ```javascript
-jenkins.build_info('job-in-jenkins', 'build-number', function(err, data) {
+jenkins.build_info('job-in-jenkins', 'build-number', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -97,7 +99,7 @@ jenkins.build_info('job-in-jenkins', 'build-number', function(err, data) {
 ### last build info
 
 ```javascript
-jenkins.last_build_info('job-in-jenkins', function(err, data) {
+jenkins.last_build_info('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -106,7 +108,7 @@ jenkins.last_build_info('job-in-jenkins', function(err, data) {
 ### last build report
 
 ```javascript
-jenkins.last_build_report('job-in-jenkins', function(err, data) {
+jenkins.last_build_report('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -115,7 +117,7 @@ jenkins.last_build_report('job-in-jenkins', function(err, data) {
 ### get config xml
 
 ```javascript
-jenkins.get_config_xml('job-in-jenkins', function(err, data) {
+jenkins.get_config_xml('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -157,7 +159,7 @@ jenkins.copy_job('job-to-copy'
 ### delete job
 
 ```javascript
-jenkins.delete_job('job-in-jenkins', function(err, data) {
+jenkins.delete_job('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -166,7 +168,7 @@ jenkins.delete_job('job-in-jenkins', function(err, data) {
 ### delete build data for job
 
 ```javascript
-jenkins.delete_build('job-in-jenkins', 'build-number', function(err, data) {
+jenkins.delete_build('job-in-jenkins', 'build-number', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -175,7 +177,7 @@ jenkins.delete_build('job-in-jenkins', 'build-number', function(err, data) {
 ### last success
 
 ```javascript
-jenkins.last_success('job-in-jenkins', function(err, data) {
+jenkins.last_success('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -183,7 +185,7 @@ jenkins.last_success('job-in-jenkins', function(err, data) {
 
 ### last result
 ```javascript
-jenkins.last_result('job-in-jenkins', function(err, data) {
+jenkins.last_result('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -191,7 +193,7 @@ jenkins.last_result('job-in-jenkins', function(err, data) {
 
 ### job output
 ```javascript
-jenkins.job_output('job-in-jenkins', 'buildname', function(err, data) {
+jenkins.job_output('job-in-jenkins', 'buildname', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -207,7 +209,7 @@ jenkins.queue(function(err, data) {
 
 ### get one queued item
 ```javascript
-jenkins.queue_item('queue-item-number', function(err, data) {
+jenkins.queue_item('queue-item-number', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
@@ -224,7 +226,7 @@ jenkins.computers(function(err, data) {
 ### get all jobs in view
 
 ```javascript
-jenkins.all_jobs_in_view('view-in-jenkins', function(err, data) {
+jenkins.all_jobs_in_view('view-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
       if (err){ return console.log(err); }
         console.log(data)
 });
