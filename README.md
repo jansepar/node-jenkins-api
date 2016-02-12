@@ -128,7 +128,7 @@ jenkins.update_job('job-to-update',
                    function(config) {
                        // function which takes the config.xml, and returns
                        // the new config xml for the job
-                       return config.replace('development,'feature-branch');
+                       return config.replace('development','feature-branch');
                    }
                    ,function(err, data) {
                        // if no error, job was copied
