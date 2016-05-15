@@ -213,6 +213,28 @@ jenkins.all_jobs_in_view('view-in-jenkins', function(err, data) {
 });
 ```
 
+### get all installed plugins
+
+```javascript
+jenkins.all_installed_plugins(function(err, data){
+    if (err){ return console.log(err); }
+    console.log(data)
+})
+```
+
+### install a plugin
+
+```javascript
+// var plugin = 'copyartifact@1.3.8';
+var plugin = 'copyartifact@current';
+jenkins.install_plugin(plugin, function(err, data){
+    if (err){ return console.log(err, data); }
+    console.log(data)
+});
+```
+NOTE: It will report successful even if the plugin is already installed.
+NOTE: Prevent Cross Site Request Forgery exploits need be disabled in Configure Global Security.
+
 ## Default configuration
 
 You can set the default configuration which will be use in all HTTP requests by calling init with the additional options parameter:
