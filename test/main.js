@@ -14,12 +14,16 @@ describe('Node Jenkins API', function() {
     expect(jenkinsapi.init).to.be.a('function');
   });
 
-  var jenkins;
+  // TODO better handle this
+  var jenkins = jenkinsapi.init(JENKINS_URL);
 
   it('Should connect', function() {
-    jenkins = jenkinsapi.init(JENKINS_URL);
     expect(jenkins).not.to.be.undefined;
   });
+
+  // TODO better handle this
+  jenkins.delete_job('test-new');
+  jenkins.delete_job('test-copy');
 
   it('Should show all jobs', function(done) {
     expect(jenkins.all_jobs).to.be.a('function');
@@ -72,6 +76,28 @@ describe('Node Jenkins API', function() {
         console.log('delete_job', {error, data});
         expect(error).to.be.null;
         done();
+      });
+    });
+  });
+
+  it('Should update job config', function(done) {
+    jenkins.copy_job('test-development', 'test-copy', function(data) {
+      return data.replace('development','feature-branch');
+    }, function(error, data) {
+      console.log('copy_job', {error, data});
+      expect(error).to.be.null;
+
+      jenkins.update_config('test-copy', function(data) {
+        return data.replace('development','feature-branch');
+      }, function(error, data) {
+        console.log('update_config', {error, data});
+        expect(error).to.be.null;
+
+        jenkins.delete_job('test-copy', function(error, data) {
+          console.log('delete_job', {error, data});
+          expect(error).to.be.null;
+          done();
+        });
       });
     });
   });
