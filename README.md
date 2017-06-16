@@ -211,6 +211,20 @@ jenkins.all_jobs_in_view('view-in-jenkins', function(err, data) {
       if (err){ return console.log(err); }
         console.log(data)
 });
+
+### update existing job configuration
+```javascript
+jenkins.update_config('job-to-update'
+                ,function(config) {
+                    // function which takes the config.xml, and returns
+                    // the new config xml for the new job
+                    return config.replace('development','feature-branch');
+                }
+                ,function(err, data) {
+                      // if no error, job was copied
+                      if (err){ return console.log(err); }
+                      console.log(data)
+                });
 ```
 
 ## Default configuration
