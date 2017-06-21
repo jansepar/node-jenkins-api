@@ -128,4 +128,41 @@ describe('Node Jenkins API', function() {
     }); // copy_job
   });
 
+  var TEST_VIEW_NAME = 'ewoiurewlkjr-test-view';
+  var TEST_VIEW_MODE = 'ewoiurewlkjr-test-view-mode';
+  var TEST_VIEW_CONF = {
+    name: "view-in-jenkins",
+    "description": "This is the view-in-jenkins View",
+    "statusFilter": "",
+    "job-in-jenkins": true,
+    "useincluderegex": true,
+    "includeRegex": "prefix.*",
+    "columns": [{"stapler-class": "hudson.views.StatusColumn", "$class": "hudson.views.StatusColumn"}, {"stapler-class": "hudson.views.WeatherColumn", "$class": "hudson.views.WeatherColumn"}, {"stapler-class": "hudson.views.JobColumn", "$class": "hudson.views.JobColumn"}, {"stapler-class": "hudson.views.LastSuccessColumn", "$class": "hudson.views.LastSuccessColumn"}, {"stapler-class": "hudson.views.LastFailureColumn", "$class": "hudson.views.LastFailureColumn"}, {"stapler-class": "hudson.views.LastDurationColumn", "$class": "hudson.views.LastDurationColumn"}, {"stapler-class": "hudson.views.BuildButtonColumn", "$class": "hudson.views.BuildButtonColumn"}]
+  };
+
+  // TODO handle this better as a test setup
+  jenkins.delete_view(TEST_VIEW_NAME);
+
+  it.only('Should CRUD a view', function(done) {
+    expect(jenkins.create_view).to.be.a('function');
+    expect(jenkins.update_view).to.be.a('function');
+    expect(jenkins.delete_view).to.be.a('function');
+    expect(jenkins.all_jobs_in_view).to.be.a('function');
+
+    jenkins.create_view(TEST_VIEW_NAME, function(error, data) {
+      expect(error).to.be.null;
+      expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+
+      jenkins.update_view(TEST_VIEW_NAME, TEST_VIEW_CONF, function(error, data) {
+        expect(error).to.be.null;
+
+        jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+          expect(error).to.be.null;
+          expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+          done();
+        }); // delete_view
+      }); // update_view
+    }); // create_view
+  });
+
 });
