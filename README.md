@@ -68,6 +68,16 @@ jenkins.build('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, fun
   console.log(data)
 });
 ```
+
+### Job Details of Queue Item
+
+```javascript
+jenkins.get_build_id_from_queue_with_id('queueId', function(err, data) {
+  if (err){ return console.log(err); }
+  console.log(data)
+});
+```
+
 ### stop build
 
 ```javascript
