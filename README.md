@@ -283,6 +283,27 @@ jenkins.delete_view('view-in-jenkins', function(err, data) {
 });
 ```
 
+### get all installed plugins
+
+```javascript
+jenkins.all_installed_plugins(function(err, data){
+    if (err){ return console.log(err); }
+    console.log(data)
+})
+```
+
+### install a plugin
+
+```javascript
+// var plugin = 'copyartifact@1.3.8';
+var plugin = 'copyartifact@current';
+jenkins.install_plugin(plugin, function(err, data){
+    if (err){ return console.log(err, data); }
+    console.log(data)
+});
+```
+NOTE: It will report successful even if the plugin is already installed.
+NOTE: Prevent Cross Site Request Forgery exploits need be disabled in Configure Global Security.
 
 ## Default configuration
 
@@ -305,8 +326,4 @@ Since node-jenkins-api uses [request/request](https://github.com/request/request
 ## Notes
 
 Modeled after the [Python Jenkins API](https://github.com/txels/autojenkins)
-
-
-
-
 
