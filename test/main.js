@@ -72,7 +72,7 @@ describe('Node Jenkins API', function() {
 
           jenkins.all_jobs(function(error, data) {
             expect(error).to.be.null;
-            expect(data).to.be.an('array').that.not.contains.something.like({name: JOB_NAME_NEW});
+            expect(data).to.be.an('array').that.does.not.contain.something.like({name: JOB_NAME_NEW});
 
             done();
 
@@ -143,8 +143,9 @@ describe('Node Jenkins API', function() {
   // TODO handle this better as a test setup
   jenkins.delete_view(TEST_VIEW_NAME);
 
-  it.only('Should CRUD a view', function(done) {
+  it('Should CRUD a view', function(done) {
     expect(jenkins.create_view).to.be.a('function');
+    expect(jenkins.all_views).to.be.a('function');
     expect(jenkins.update_view).to.be.a('function');
     expect(jenkins.delete_view).to.be.a('function');
     expect(jenkins.all_jobs_in_view).to.be.a('function');
@@ -153,15 +154,27 @@ describe('Node Jenkins API', function() {
       expect(error).to.be.null;
       expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
 
-      jenkins.update_view(TEST_VIEW_NAME, TEST_VIEW_CONF, function(error, data) {
+      jenkins.all_views(function(error, data) {
         expect(error).to.be.null;
+        expect(data).to.be.an('array').that.contains.something.like({name: TEST_VIEW_NAME});
 
-        jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+        jenkins.update_view(TEST_VIEW_NAME, TEST_VIEW_CONF, function(error, data) {
           expect(error).to.be.null;
-          expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
-          done();
-        }); // delete_view
-      }); // update_view
+
+          jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+            expect(error).to.be.null;
+            expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+
+            jenkins.all_views(function(error, data) {
+              expect(error).to.be.null;
+              expect(data).to.be.an('array').that.does.not.contain.something.like({name: TEST_VIEW_NAME});
+
+              done();
+
+            }); // all_views
+          }); // delete_view
+        }); // update_view
+      }); // all_views
     }); // create_view
   });
 
