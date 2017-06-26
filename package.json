@@ -1,10 +1,10 @@
 {
   "name": "jenkins-api",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Jenkins API written in Node.js",
   "author": "Shawn Jansepar <shawnjan@gmail.com>",
   "dependencies": {
-    "request": ">= 2.2.9"
+    "request": "^2.81.0"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,15 @@
   "engine": {
     "node": ">=0.4"
   },
-  "main": "./lib/main.js"
+  "main": "./lib/main.js",
+  "scripts": {
+    "test": "mocha ./test/main.js"
+  },
+  "devDependencies": {
+    "bluebird": "^3.5.0",
+    "chai": "^4.0.2",
+    "chai-like": "^0.2.14",
+    "chai-things": "^0.2.0",
+    "mocha": "^3.4.2"
+  }
 }
