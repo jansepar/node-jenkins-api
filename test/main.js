@@ -33,8 +33,8 @@ describe('Node Jenkins API', function() {
   });
 
   // TODO handle this better as a test setup
-  jenkins.delete_job(JOB_NAME_NEW);
-  jenkins.delete_job(JOB_NAME_COPY);
+  jenkins.delete_job(JOB_NAME_NEW, function(){});
+  jenkins.delete_job(JOB_NAME_COPY, function(){});
 
   it('Should show all jobs', function(done) {
     expect(jenkins.all_jobs).to.be.a('function');
@@ -56,23 +56,27 @@ describe('Node Jenkins API', function() {
     }); // get_config_xml
   });
 
-  it('Should create and delete job', function(done) {
+  it.only('Should create and delete job', function(done) {
     expect(jenkins.create_job).to.be.a('function');
     expect(jenkins.delete_job).to.be.a('function');
 
     jenkins.create_job(JOB_NAME_NEW, DEVELOPMENT_PROJECT_XML_CONFIG, function(error, data) {
       expect(error).to.be.null;
+      console.log("job vytvoren");
 
       jenkins.all_jobs(function(error, data) {
         expect(error).to.be.null;
         expect(data).to.be.an('array').that.contains.something.like({name: JOB_NAME_NEW});
+        console.log("a je tam");
 
         jenkins.delete_job(JOB_NAME_NEW, function(error, data) {
           expect(error).to.be.null;
+          console.log("job smazan");
 
           jenkins.all_jobs(function(error, data) {
             expect(error).to.be.null;
             expect(data).to.be.an('array').that.does.not.contain.something.like({name: JOB_NAME_NEW});
+            console.log("a neni tam");
 
             done();
 
