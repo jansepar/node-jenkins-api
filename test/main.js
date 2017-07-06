@@ -207,43 +207,100 @@ describe('Node Jenkins API', function() {
 
   it('Should CRUD a view', function(done) {
     expect(jenkins.create_view).to.be.a('function');
+    expect(jenkins.view_info).to.be.a('function');
     expect(jenkins.all_views).to.be.a('function');
     expect(jenkins.update_view).to.be.a('function');
     expect(jenkins.delete_view).to.be.a('function');
-    expect(jenkins.all_jobs_in_view).to.be.a('function');
 
-    jenkins.create_view(TEST_VIEW_NAME, function(error, data) {
-      log('create_view', TEST_VIEW_NAME, {error, data});
-      expect(error).to.be.null;
-      expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+    jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+      // NOTE ignoring error
 
-      jenkins.all_views(function(error, data) {
-        log('all_views', {error, data});
+      jenkins.create_view(TEST_VIEW_NAME, function(error, data) {
+        log('create_view', TEST_VIEW_NAME, {error, data});
         expect(error).to.be.null;
-        expect(data).to.be.an('array').that.contains.something.like({name: TEST_VIEW_NAME});
+        expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
 
-        jenkins.update_view(TEST_VIEW_NAME, TEST_VIEW_CONF, function(error, data) {
-          log('update_view', TEST_VIEW_NAME, TEST_VIEW_CONF, {error, data});
+        jenkins.view_info(TEST_VIEW_NAME, function(error, data) {
+          log('view_info', {error, data});
           expect(error).to.be.null;
           expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
 
-          jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
-            log('delete_view', TEST_VIEW_NAME, {error, data});
+          jenkins.all_views(function(error, data) {
+            log('all_views', {error, data});
             expect(error).to.be.null;
-            expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+            expect(data).to.be.an('array').that.contains.something.like({name: TEST_VIEW_NAME});
 
-            jenkins.all_views(function(error, data) {
-              log('all_views', {error, data});
+            jenkins.update_view(TEST_VIEW_NAME, TEST_VIEW_CONF, function(error, data) {
+              log('update_view', TEST_VIEW_NAME, TEST_VIEW_CONF, {error, data});
               expect(error).to.be.null;
-              expect(data).to.be.an('array').that.does.not.contain.something.like({name: TEST_VIEW_NAME});
+              expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
 
-              done();
+              jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+                log('delete_view', TEST_VIEW_NAME, {error, data});
+                expect(error).to.be.null;
+                expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
 
-            }); // all_views
-          }); // delete_view
-        }); // update_view
-      }); // all_views
-    }); // create_view
+                jenkins.all_views(function(error, data) {
+                  log('all_views', {error, data});
+                  expect(error).to.be.null;
+                  expect(data).to.be.an('array').that.does.not.contain.something.like({name: TEST_VIEW_NAME});
+
+                  done();
+
+                }); // all_views
+              }); // delete_view
+            }); // update_view
+          }); // all_views
+        }); // view_info
+      }); // create_view
+    }); // delete_view
+  });
+
+  it('Should add/remove and list jobs in view', function(done) {
+    expect(jenkins.add_job_to_view).to.be.a('function');
+    expect(jenkins.remove_job_from_view).to.be.a('function');
+    expect(jenkins.all_jobs_in_view).to.be.a('function');
+
+    jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+      // NOTE ignoring error
+
+      jenkins.create_view(TEST_VIEW_NAME, function(error, data) {
+        log('create_view', {error, data});
+        expect(error).to.be.null;
+        expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+
+        jenkins.add_job_to_view(TEST_VIEW_NAME, JOB_NAME_TEST, function(error, data) {
+          log('add_job_to_view', {error, data});
+          expect(error).to.be.null;
+
+          jenkins.all_jobs_in_view(TEST_VIEW_NAME, function(error, data) {
+            log('all_jobs_in_view', {error, data});
+            expect(error).to.be.null;
+            expect(data).to.be.an('array').that.contains.something.like({name: JOB_NAME_TEST});
+
+            jenkins.remove_job_from_view(TEST_VIEW_NAME, JOB_NAME_TEST, function(error, data) {
+              log('remove_job_from_view', {error, data});
+              expect(error).to.be.null;
+
+              jenkins.all_jobs_in_view(TEST_VIEW_NAME, function(error, data) {
+                log('all_jobs_in_view', {error, data});
+                expect(error).to.be.null;
+                expect(data).to.be.an('array').that.not.contains.something.like({name: JOB_NAME_TEST});
+
+                jenkins.delete_view(TEST_VIEW_NAME, function(error, data) {
+                  log('delete_view', TEST_VIEW_NAME, {error, data});
+                  expect(error).to.be.null;
+                  expect(data).to.be.an('object').like({name: TEST_VIEW_NAME});
+
+                  done();
+
+                }); // delete_view
+              }); // all_jobs_in_view
+            }); // remove_job_from_view
+          }); // all_jobs_in_view
+        }); // add_job_to_view
+      }); // create_view
+    }); // delete_view
   });
 
 
