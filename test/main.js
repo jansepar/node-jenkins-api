@@ -188,6 +188,36 @@ describe('Node Jenkins API', function() {
     }); // copy_job
   });
 
+  it('Should disable/enable job', function(done) {
+    expect(jenkins.disable_job).to.be.a('function');
+    expect(jenkins.enable_job).to.be.a('function');
+
+    jenkins.copy_job(JOB_NAME_TEST, JOB_NAME_COPY, function(data) {
+      return data;
+    }, function(error, data) {
+      log('copy_job', JOB_NAME_TEST, JOB_NAME_COPY, {error, data});
+      expect(error).to.be.null;
+
+      jenkins.disable_job(JOB_NAME_COPY, function(error, data) {
+        log('disable_job', JOB_NAME_COPY, {error, data});
+        expect(error).to.be.null;
+        expect(data).to.be.an('object').like({name: JOB_NAME_COPY, color: 'disabled', buildable: false});
+
+        jenkins.enable_job(JOB_NAME_COPY, function(error, data) {
+          log('enable_job', JOB_NAME_COPY, {error, data});
+          expect(error).to.be.null;
+          expect(data).to.be.an('object').like({name: JOB_NAME_COPY}).and.not.like({color: 'disabled'});
+
+          jenkins.delete_job(JOB_NAME_COPY, function(error, data) {
+            log('delete_job', JOB_NAME_COPY, {error, data});
+            expect(error).to.be.null;
+            done();
+          }); // delete_job
+        }); // get_config_xml
+      }); // update_config
+    }); // copy_job
+  });
+
 
   var TEST_VIEW_NAME = 'ewoiurewlkjr-test-view';
   var TEST_VIEW_MODE = 'ewoiurewlkjr-test-view-mode';
