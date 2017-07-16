@@ -3,14 +3,10 @@
   "version": "0.2.9",
   "description": "Jenkins API written in Node.js",
   "author": "Shawn Jansepar <shawnjan@gmail.com>",
+  "contributors": [
+    "Jakub Podlaha <j.podlaha@gmail.com> (https://github.com/kub1x)"
+  ],
   "license": "MIT",
-  "dependencies": {
-    "request": "^2.81.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:jansepar/node-jenkins-api.git"
-  },
   "keywords": [
     "github",
     "jenkins"
@@ -22,11 +18,18 @@
   "scripts": {
     "test": "mocha ./test/main.js"
   },
+  "dependencies": {
+    "request": "^2.81.0"
+  },
   "devDependencies": {
     "bluebird": "^3.5.0",
     "chai": "^4.1.0",
     "chai-like": "^0.2.14",
     "chai-things": "^0.2.0",
     "mocha": "^3.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jansepar/node-jenkins-api.git"
   }
 }
