@@ -340,6 +340,15 @@ describe('Node Jenkins API', function() {
 
 
   it('Should start/stop and list builds', function(done) {
+    expect(jenkins.build).to.be.a('function');
+    expect(jenkins.job_info).to.be.a('function');
+    expect(jenkins.queue_item).to.be.a('function');
+    expect(jenkins.all_builds).to.be.a('function');
+    expect(jenkins.build_info).to.be.a('function');
+    expect(jenkins.stop_build).to.be.a('function');
+    expect(jenkins.console_output).to.be.a('function');
+    expect(jenkins.last_build_info).to.be.a('function');
+    expect(jenkins.delete_build).to.be.a('function');
 
     jenkins.build(JOB_NAME_TEST, function(error, data) {
       log('build', JOB_NAME_TEST, {error, data});
@@ -348,7 +357,7 @@ describe('Node Jenkins API', function() {
       expect(data.queueId).to.be.a('number');
 
       var queueId = data.queueId;
- 
+
       jenkins.job_info(JOB_NAME_TEST, function(error, data) {
         log('job_info', JOB_NAME_TEST, {error, data});
         expect(error).to.be.null;
@@ -380,7 +389,6 @@ describe('Node Jenkins API', function() {
 
                 jenkins.all_builds(JOB_NAME_TEST, function(error, data) {
                   log('all_builds', JOB_NAME_TEST, {error, data});
-                  log('data:' + JSON.stringify(data, null, 2));
                   expect(error).to.be.null;
                   expect(data).to.be.an('array').that.contains.something.like({id: ""+buildId});
 
@@ -405,17 +413,28 @@ describe('Node Jenkins API', function() {
                             log('console_output', JOB_NAME_TEST, buildId, {error, data});
                             expect(error).to.be.null;
                             expect(data).to.be.an('object');
-                            expect(data.body).to.be.a('string').that.contains('sleep 60');//.and.contains('Terminated'); // TODO for some reason not always there
+                            expect(data.body).to.be.a('string').that.contains('sleep 60');
 
                             jenkins.last_build_info(JOB_NAME_TEST, function(error, data) {
-                              log('last_build_info', JOB_NAME_TEST, buildId, {error, data});
+                              log('last_build_info', JOB_NAME_TEST, {error, data});
                               expect(error).to.be.null;
                               expect(data).to.be.an('object').like({number: buildId, building: false, result: 'ABORTED'});
 
-                              done();
+                              jenkins.delete_build(JOB_NAME_TEST, buildId, function(error, data) {
+                                log('delete_build', JOB_NAME_TEST, buildId, {error, data});
+                                expect(error).to.be.null;
 
-                            }); // last_build_info 
-                          }); // console_output 
+                                jenkins.all_builds(JOB_NAME_TEST, function(error, data) {
+                                  log('all_builds', JOB_NAME_TEST, {error, data});
+                                  expect(error).to.be.null;
+                                  expect(data).to.be.an('array').that.does.not.contain.something.like({id: "" + buildId});
+
+                                  done();
+
+                                }); // all_builds
+                              }); // delete_build
+                            }); // last_build_info
+                          }); // console_output
                         }); // build_info
 
                       }, 2000); // setTimeout
@@ -430,7 +449,7 @@ describe('Node Jenkins API', function() {
 
         }); // queue_item
       }); // job_info
-    }); // build 
+    }); // build
   }).timeout(14000);
 
 
