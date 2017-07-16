@@ -15,12 +15,13 @@ var JOB_NAME_NEW = "asrwqersfdzdraser-test-new";
 var JOB_NAME_COPY = "asrwqersfdzdraser-test-copy";
 
 var TEST_CONFIG_XML_FILE = 'test/test_config.xml';
+var TEST_WITH_PARAMS_CONFIG_XML_FILE = 'test/test_with_params_config.xml';
 var DEVELOPMENT_PROJECT_XML_CONFIG = '<?xml version="1.0" encoding="UTF-8"?><project><description>development</description></project>';
 var ORIGINAL_DESCRIPTION = 'development';
 var REPLACED_DESCRIPTION = 'feature';
 
 function log() {
-  //console.log.apply(console, arguments);
+  console.log.apply(console, arguments);
 }
 
 describe('Node Jenkins API', function() {
@@ -452,5 +453,64 @@ describe('Node Jenkins API', function() {
     }); // build
   }).timeout(14000);
 
+  it.only('Should build with params', function(done) {
+    var SLEEP_TIME = 123;
+
+    fs.readFile(TEST_WITH_PARAMS_CONFIG_XML_FILE, 'utf8', function(error, xmlConfig){
+      log('readFile', {error, xmlConfig});
+
+      jenkins.create_job(JOB_NAME_NEW, xmlConfig, function(error, data) {
+        log('create_job', JOB_NAME_NEW, {error, data});
+
+        jenkins.build_with_params(JOB_NAME_NEW, {sleep_time: SLEEP_TIME}, function(error, data) {
+          log('build_with_params', JOB_NAME_NEW, {error, data});
+          expect(error).to.be.null;
+          expect(data).to.be.an('object');
+          expect(data.queueId).to.be.a('number');
+
+          var queueId = data.queueId;
+
+          setTimeout(function() {
+
+            jenkins.queue_item(queueId, function(error, data) {
+              log('queue_item', queueId, {error, data});
+              expect(error).to.be.null;
+              expect(data).to.be.an('object').like({id: queueId});
+              expect(data.executable).to.be.an('object');
+              expect(data.executable.number).to.be.a('number');
+
+              var buildId = data.executable.number;
+
+              jenkins.console_output(JOB_NAME_NEW, buildId, function(error, data) {
+                log('console_output', JOB_NAME_NEW, buildId, {error, data});
+                expect(error).to.be.null;
+                expect(data).to.be.an('object');
+                expect(data.body).to.be.a('string').that.contains('sleep ' + SLEEP_TIME);
+
+                jenkins.delete_job(JOB_NAME_NEW, function(error, data) {
+                  log('delete_job', JOB_NAME_NEW, {error, data});
+                  expect(error).to.be.null;
+                  expect(data).to.be.an('object').like({name: JOB_NAME_NEW});
+
+                  done();
+
+                }); // delete_job
+              }); // console_output
+            }); // queue_item
+
+          }, 11000); // setTimeout
+
+        }); // build_with_params
+      }); // create_job
+    }); // readFile
+  }).timeout(14000);
+
+  // Use for onetime tasks do this
+  //it.only('should do this', function(done) {
+  //  jenkins.get_config_xml(JOB_NAME_TEST, function(error, data) {
+  //    console.log(data);
+  //    done();
+  //  }); // get_config_xml
+  //});
 
 });
