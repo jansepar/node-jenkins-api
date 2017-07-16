@@ -1,5 +1,19 @@
 nodejs-jenkins-api
 =================
+<p align="center">
+  <a href="https://npmjs.org/package/jenkins-api">
+    <img src="https://img.shields.io/npm/v/jenkins-api.svg" alt="NPM Version">
+  </a>
+  <a href="https://npmjs.org/package/jenkins-api">
+    <img src="https://img.shields.io/npm/dm/jenkins-api.svg" alt="NPM downloads">
+  </a>
+  <a href="http://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/npm/l/nodejs-jenkins-api.svg" alt="License">
+  </a>
+  <a href="https://github.com/jansepar/node-jenkins-api/issues">
+    <img src="https://img.shields.io/github/issues/jansepar/node-jenkins-api.svg" alt="Github Issues">
+  </a>
+</p>
 
 ## Install
 
