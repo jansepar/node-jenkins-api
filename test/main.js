@@ -1,3 +1,4 @@
+var fs = require('fs');
 var chai = require('chai'),
     expect = chai.expect;
 
@@ -13,6 +14,7 @@ var JOB_NAME_TEST = "asrwqersfdzdraser-test";
 var JOB_NAME_NEW = "asrwqersfdzdraser-test-new";
 var JOB_NAME_COPY = "asrwqersfdzdraser-test-copy";
 
+var TEST_CONFIG_XML_FILE = 'test/test_config.xml';
 var DEVELOPMENT_PROJECT_XML_CONFIG = '<?xml version="1.0" encoding="UTF-8"?><project><description>development</description></project>';
 var ORIGINAL_DESCRIPTION = 'development';
 var REPLACED_DESCRIPTION = 'feature';
@@ -23,49 +25,56 @@ function log() {
 
 describe('Node Jenkins API', function() {
 
-  it('Should exist', function() {
-    expect(jenkinsapi).not.to.be.undefined;
-    expect(jenkinsapi.init).to.be.a('function');
-  });
+  var jenkins;
 
+  before(function(done) {
 
-  // TODO handle this better as a test setup
-  var jenkins = jenkinsapi.init(JENKINS_URL);
+    it('Should exist', function() {
+      expect(jenkinsapi).not.to.be.undefined;
+      expect(jenkinsapi.init).to.be.a('function');
+    });
 
+    jenkins = jenkinsapi.init(JENKINS_URL);
 
-  it('Should create the connection object', function() {
-    expect(jenkins).not.to.be.undefined;
-  });
+    it('Should create the connection object', function() {
+      expect(jenkins).not.to.be.undefined;
+    });
 
-
-  // TODO handle this better - as a test setup
-  //it('Should prepare for the tests', function(done) {
     expect(jenkins.delete_job).to.be.a('function');
     expect(jenkins.all_jobs).to.be.a('function');
 
-    jenkins.delete_job(JOB_NAME_NEW, function(error, data){
-      //log('delete_job', JOB_NAME_NEW, {error, data});
+    jenkins.delete_job(JOB_NAME_TEST, function(error, data){
+      log('delete_job', JOB_NAME_TEST, {error, data});
 
-      jenkins.delete_job(JOB_NAME_COPY, function(error, data){
-        //log('delete_job', JOB_NAME_COPY, {error, data});
+        jenkins.delete_job(JOB_NAME_NEW, function(error, data){
+        log('delete_job', JOB_NAME_NEW, {error, data});
 
-        jenkins.create_job(JOB_NAME_TEST, DEVELOPMENT_PROJECT_XML_CONFIG, function(error, data) {
-          //log('create_job', JOB_NAME_TEST, {error, data});
+        jenkins.delete_job(JOB_NAME_COPY, function(error, data){
+          log('delete_job', JOB_NAME_COPY, {error, data});
 
-          jenkins.all_jobs(function(error, data) {
-            //log('all_jobs', {error, data});
+          fs.readFile(TEST_CONFIG_XML_FILE, 'utf8', function(error, xmlConfig){
+            log('readFile', {error, xmlConfig});
 
-            expect(error).to.be.null;
-            expect(data).to.be.an('array').that.contains.something.like({name: JOB_NAME_TEST});
+            jenkins.create_job(JOB_NAME_TEST, xmlConfig, function(error, data) {
+              log('create_job', JOB_NAME_TEST, {error, data});
 
-            //done();
+              jenkins.all_jobs(function(error, data) {
+                log('all_jobs', {error, data});
 
-          }); // all_jobs
-        }); // create_job
+                expect(error).to.be.null;
+                expect(data).to.be.an('array').that.contains.something.like({name: JOB_NAME_TEST});
+
+                done();
+
+              }); // all_jobs
+            }); // create_job
+
+          }); // readFile
+
+        }); // delete_job
       }); // delete_job
     }); // delete_job
-  //});
-
+  });
 
   it('Should show all jobs', function(done) {
     expect(jenkins.all_jobs).to.be.a('function');
@@ -231,10 +240,6 @@ describe('Node Jenkins API', function() {
     "columns": [{"stapler-class": "hudson.views.StatusColumn", "$class": "hudson.views.StatusColumn"}, {"stapler-class": "hudson.views.WeatherColumn", "$class": "hudson.views.WeatherColumn"}, {"stapler-class": "hudson.views.JobColumn", "$class": "hudson.views.JobColumn"}, {"stapler-class": "hudson.views.LastSuccessColumn", "$class": "hudson.views.LastSuccessColumn"}, {"stapler-class": "hudson.views.LastFailureColumn", "$class": "hudson.views.LastFailureColumn"}, {"stapler-class": "hudson.views.LastDurationColumn", "$class": "hudson.views.LastDurationColumn"}, {"stapler-class": "hudson.views.BuildButtonColumn", "$class": "hudson.views.BuildButtonColumn"}]
   };
 
-  // TODO handle this better as a test setup
-  jenkins.delete_view(TEST_VIEW_NAME, function(){});
-
-
   it('Should CRUD a view', function(done) {
     expect(jenkins.create_view).to.be.a('function');
     expect(jenkins.view_info).to.be.a('function');
@@ -332,6 +337,101 @@ describe('Node Jenkins API', function() {
       }); // create_view
     }); // delete_view
   });
+
+
+  it('Should start/stop and list builds', function(done) {
+
+    jenkins.build(JOB_NAME_TEST, function(error, data) {
+      log('build', JOB_NAME_TEST, {error, data});
+      expect(error).to.be.null;
+      expect(data).to.be.an('object');
+      expect(data.queueId).to.be.a('number');
+
+      var queueId = data.queueId;
+ 
+      jenkins.job_info(JOB_NAME_TEST, function(error, data) {
+        log('job_info', JOB_NAME_TEST, {error, data});
+        expect(error).to.be.null;
+        expect(data).to.be.an('object').like({name: JOB_NAME_TEST});
+        expect(data.queueItem).to.be.an('object').like({_class: 'hudson.model.Queue$WaitingItem', id: queueId});
+
+        jenkins.queue_item(queueId, function(error, data) {
+          log('queue_item', queueId, {error, data});
+          expect(error).to.be.null;
+          expect(data).to.be.an('object').like({id: queueId});
+
+          setTimeout(function() {
+
+            jenkins.queue_item(queueId, function(error, data) {
+              log('queue_item', queueId, {error, data});
+              expect(error).to.be.null;
+              expect(data).to.be.an('object').like({id: queueId});
+              expect(data.executable).to.be.an('object');
+              expect(data.executable.number).to.be.a('number');
+
+              var buildId = data.executable.number;
+
+              jenkins.job_info(JOB_NAME_TEST, function(error, data) {
+                log('job_info', JOB_NAME_TEST, {error, data});
+                expect(error).to.be.null;
+                expect(data).to.be.an('object').like({name: JOB_NAME_TEST});
+                expect(data.lastBuild).to.be.an('object').like({_class: 'hudson.model.FreeStyleBuild'});
+                expect(data.lastBuild.number).to.equal(buildId);
+
+                jenkins.all_builds(JOB_NAME_TEST, function(error, data) {
+                  log('all_builds', JOB_NAME_TEST, {error, data});
+                  log('data:' + JSON.stringify(data, null, 2));
+                  expect(error).to.be.null;
+                  expect(data).to.be.an('array').that.contains.something.like({id: ""+buildId});
+
+                  jenkins.build_info(JOB_NAME_TEST, buildId, function(error, data) {
+                    log('build_info', JOB_NAME_TEST, buildId, {error, data});
+                    expect(error).to.be.null;
+                    expect(data).to.be.an('object').like({number: buildId, building: true, result: null});
+
+                    jenkins.stop_build(JOB_NAME_TEST, buildId, function(error, data) {
+                      log('stop_build', JOB_NAME_TEST, buildId, {error, data});
+                      expect(error).to.be.null;
+                      expect(data).to.be.an('object').like({body: 'Build ' + buildId + ' stopped.'});
+
+                      setTimeout(function() {
+
+                        jenkins.build_info(JOB_NAME_TEST, buildId, function(error, data) {
+                          log('build_info', JOB_NAME_TEST, buildId, {error, data});
+                          expect(error).to.be.null;
+                          expect(data).to.be.an('object').like({number: buildId, building: false, result: 'ABORTED'});
+
+                          jenkins.console_output(JOB_NAME_TEST, buildId, function(error, data) {
+                            log('console_output', JOB_NAME_TEST, buildId, {error, data});
+                            expect(error).to.be.null;
+                            expect(data).to.be.an('object');
+                            expect(data.body).to.be.a('string').that.contains('sleep 60');//.and.contains('Terminated'); // TODO for some reason not always there
+
+                            jenkins.last_build_info(JOB_NAME_TEST, function(error, data) {
+                              log('last_build_info', JOB_NAME_TEST, buildId, {error, data});
+                              expect(error).to.be.null;
+                              expect(data).to.be.an('object').like({number: buildId, building: false, result: 'ABORTED'});
+
+                              done();
+
+                            }); // last_build_info 
+                          }); // console_output 
+                        }); // build_info
+
+                      }, 2000); // setTimeout
+
+                    }); // stop_build
+                  }); // build_info
+                }); // all_builds
+              }); // job_info
+            }); // queue_item
+
+          }, 11000); // setTimeout
+
+        }); // queue_item
+      }); // job_info
+    }); // build 
+  }).timeout(14000);
 
 
 });
