@@ -21,7 +21,7 @@ var ORIGINAL_DESCRIPTION = 'development';
 var REPLACED_DESCRIPTION = 'feature';
 
 function log() {
-  console.log.apply(console, arguments);
+  //console.log.apply(console, arguments);
 }
 
 describe('Node Jenkins API', function() {
@@ -453,7 +453,7 @@ describe('Node Jenkins API', function() {
     }); // build
   }).timeout(14000);
 
-  it.only('Should build with params', function(done) {
+  it('Should build with params', function(done) {
     var SLEEP_TIME = 123;
 
     fs.readFile(TEST_WITH_PARAMS_CONFIG_XML_FILE, 'utf8', function(error, xmlConfig){

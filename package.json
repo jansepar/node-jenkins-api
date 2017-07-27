@@ -16,17 +16,36 @@
   },
   "main": "./lib/main.js",
   "scripts": {
-    "test": "mocha ./test/main.js"
+    "build": "babel ./src --out-dir ./lib",
+    "audit": "nsp check package",
+    "lint": "# eslint src test",
+    "check": "npm run audit && ncu && npm outdated --depth 0",
+    "test": "npm run build && mocha ./test/main.js",
+    "validate": "npm run lint && npm test",
+    "prepare": "npm run build && npm run validate && npm run check",
+    "major": "pmm major",
+    "minor": "pmm minor",
+    "patch": "pmm patch"
   },
+  "pre-commit": [
+    "validate"
+  ],
   "dependencies": {
     "request": "^2.81.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-function-bind": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
     "bluebird": "^3.5.0",
     "chai": "^4.1.0",
     "chai-like": "^0.2.14",
     "chai-things": "^0.2.0",
+    "eslint": "^4.3.0",
     "mocha": "^3.4.2",
+    "ncu": "^0.2.1",
+    "nsp": "^2.7.0",
     "pmm": "^1.3.1"
   },
   "repository": {
