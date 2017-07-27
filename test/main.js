@@ -10,6 +10,10 @@ chai.use(chaiThings);
 var jenkinsapi = require('../lib/main');
 var JENKINS_URL = "http://localhost:8080";
 
+// var USER = 'jenkins';
+// var TOKEN = 'a5af9f12a1723c2a45c4c6bfd88d0044';
+// var JENKINS_URL = "http://" + USER + ":" + TOKEN + "@localhost:8080";
+
 var JOB_NAME_TEST = "asrwqersfdzdraser-test";
 var JOB_NAME_NEW = "asrwqersfdzdraser-test-new";
 var JOB_NAME_COPY = "asrwqersfdzdraser-test-copy";
