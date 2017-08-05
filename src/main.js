@@ -16,7 +16,7 @@ const BUILD_DELETE = '/job/%s/%s/doDelete';
 
 const ALL_BUILDS = '/job/%s' + API + '?tree=allBuilds[%s]';
 const LAST_SUCCESS = '/job/%s/lastSuccessfulBuild' + API;
-const TEST_REPORT = '/job/%s/lastSuccessfulBuild/testReport' + API;
+const TEST_REPORT = '/job/%s/%s/testReport' + API;
 const LAST_BUILD = '/job/%s/lastBuild' + API;
 const LAST_COMPLETED_BUILD = '/job/%s/lastCompletedBuild' + API;
 const LAST_REPORT = '/job/%s/lastBuild' + API;
