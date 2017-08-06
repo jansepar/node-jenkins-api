@@ -1,38 +1,39 @@
-var fs = require('fs');
-var chai = require('chai'),
-  expect = chai.expect;
+const fs = require('fs');
+const chai = require('chai');
+const expect = chai.expect;
 
-var chaiLike = require('chai-like');
-var chaiThings = require('chai-things');
+const chaiLike = require('chai-like');
+const chaiThings = require('chai-things');
+
 chai.use(chaiLike);
 chai.use(chaiThings);
 
-var jenkinsapi = require('../lib/main');
-var JENKINS_URL = "http://localhost:8080";
+const jenkinsapi = require('../lib/main');
+const JENKINS_URL = 'http://localhost:8080';
 
 // var USER = 'jenkins';
 // var TOKEN = 'a5af9f12a1723c2a45c4c6bfd88d0044';
 // var JENKINS_URL = "http://" + USER + ":" + TOKEN + "@localhost:8080";
 
-var JOB_NAME_TEST = "asrwqersfdzdraser-test";
-var JOB_NAME_NEW = "asrwqersfdzdraser-test-new";
-var JOB_NAME_COPY = "asrwqersfdzdraser-test-copy";
-var JOB_NAME_REPORT = "asrwqersfdzdraser-test-with-report";
+const JOB_NAME_TEST = 'asrwqersfdzdraser-test';
+const JOB_NAME_NEW = 'asrwqersfdzdraser-test-new';
+const JOB_NAME_COPY = 'asrwqersfdzdraser-test-copy';
+const JOB_NAME_REPORT = 'asrwqersfdzdraser-test-with-report';
 
-var TEST_CONFIG_XML_FILE = 'test/test_config.xml';
-var TEST_WITH_PARAMS_CONFIG_XML_FILE = 'test/test_with_params_config.xml';
-var TEST_WITH_REPORT_CONFIG_XML_FILE = 'test/test_with_report_config.xml';
-var DEVELOPMENT_PROJECT_XML_CONFIG = '<?xml version="1.0" encoding="UTF-8"?><project><description>development</description></project>';
-var ORIGINAL_DESCRIPTION = 'development';
-var REPLACED_DESCRIPTION = 'feature';
+const TEST_CONFIG_XML_FILE = 'test/test_config.xml';
+const TEST_WITH_PARAMS_CONFIG_XML_FILE = 'test/test_with_params_config.xml';
+const TEST_WITH_REPORT_CONFIG_XML_FILE = 'test/test_with_report_config.xml';
+const DEVELOPMENT_PROJECT_XML_CONFIG = '<?xml version="1.0" encoding="UTF-8"?><project><description>development</description></project>';
+const ORIGINAL_DESCRIPTION = 'development';
+const REPLACED_DESCRIPTION = 'feature';
 
 function log() {
-  //console.log.apply(console, arguments);
+  // console.log.apply(console, arguments);
 }
 
 describe('Node Jenkins API', function () {
 
-  var jenkins;
+  let jenkins;
 
   before(function (done) {
 
@@ -236,16 +237,16 @@ describe('Node Jenkins API', function () {
   });
 
 
-  var TEST_VIEW_NAME = 'ewoiurewlkjr-test-view';
-  var TEST_VIEW_MODE = 'ewoiurewlkjr-test-view-mode';
-  var TEST_VIEW_CONF = {
-    "name": TEST_VIEW_NAME,
-    "description": "This is the " + TEST_VIEW_NAME + " job-in-jenkins View",
-    "statusFilter": "",
-    "job-in-jenkins": true,
-    "useincluderegex": true,
-    "includeRegex": "prefix.*",
-    "columns": [{ "stapler-class": "hudson.views.StatusColumn", "$class": "hudson.views.StatusColumn" }, { "stapler-class": "hudson.views.WeatherColumn", "$class": "hudson.views.WeatherColumn" }, { "stapler-class": "hudson.views.JobColumn", "$class": "hudson.views.JobColumn" }, { "stapler-class": "hudson.views.LastSuccessColumn", "$class": "hudson.views.LastSuccessColumn" }, { "stapler-class": "hudson.views.LastFailureColumn", "$class": "hudson.views.LastFailureColumn" }, { "stapler-class": "hudson.views.LastDurationColumn", "$class": "hudson.views.LastDurationColumn" }, { "stapler-class": "hudson.views.BuildButtonColumn", "$class": "hudson.views.BuildButtonColumn" }]
+  const TEST_VIEW_NAME = 'ewoiurewlkjr-test-view';
+  const TEST_VIEW_MODE = 'ewoiurewlkjr-test-view-mode';
+  const TEST_VIEW_CONF = {
+    name: TEST_VIEW_NAME,
+    description: `This is the ${TEST_VIEW_NAME} job-in-jenkins View`,
+    statusFilter: '',
+    'job-in-jenkins': true,
+    useincluderegex: true,
+    includeRegex: 'prefix.*',
+    columns: [{ 'stapler-class': 'hudson.views.StatusColumn', $class: 'hudson.views.StatusColumn' }, { 'stapler-class': 'hudson.views.WeatherColumn', $class: 'hudson.views.WeatherColumn' }, { 'stapler-class': 'hudson.views.JobColumn', $class: 'hudson.views.JobColumn' }, { 'stapler-class': 'hudson.views.LastSuccessColumn', $class: 'hudson.views.LastSuccessColumn' }, { 'stapler-class': 'hudson.views.LastFailureColumn', $class: 'hudson.views.LastFailureColumn' }, { 'stapler-class': 'hudson.views.LastDurationColumn', $class: 'hudson.views.LastDurationColumn' }, { 'stapler-class': 'hudson.views.BuildButtonColumn', $class: 'hudson.views.BuildButtonColumn' }]
   };
 
   it('Should CRUD a view', function (done) {
@@ -364,7 +365,7 @@ describe('Node Jenkins API', function () {
       expect(data).to.be.an('object');
       expect(data.queueId).to.be.a('number');
 
-      var queueId = data.queueId;
+      const queueId = data.queueId;
 
       jenkins.job_info(JOB_NAME_TEST, function (error, data) {
         log('job_info', JOB_NAME_TEST, { error, data });
@@ -386,7 +387,7 @@ describe('Node Jenkins API', function () {
               expect(data.executable).to.be.an('object');
               expect(data.executable.number).to.be.a('number');
 
-              var buildId = data.executable.number;
+              const buildId = data.executable.number;
 
               jenkins.job_info(JOB_NAME_TEST, function (error, data) {
                 log('job_info', JOB_NAME_TEST, { error, data });
@@ -398,7 +399,7 @@ describe('Node Jenkins API', function () {
                 jenkins.all_builds(JOB_NAME_TEST, function (error, data) {
                   log('all_builds', JOB_NAME_TEST, { error, data });
                   expect(error).to.be.null;
-                  expect(data).to.be.an('array').that.contains.something.like({ id: "" + buildId });
+                  expect(data).to.be.an('array').that.contains.something.like({ id: `${buildId}` });
 
                   jenkins.build_info(JOB_NAME_TEST, buildId, function (error, data) {
                     log('build_info', JOB_NAME_TEST, buildId, { error, data });
@@ -408,7 +409,7 @@ describe('Node Jenkins API', function () {
                     jenkins.stop_build(JOB_NAME_TEST, buildId, function (error, data) {
                       log('stop_build', JOB_NAME_TEST, buildId, { error, data });
                       expect(error).to.be.null;
-                      expect(data).to.be.an('object').like({ body: 'Build ' + buildId + ' stopped.' });
+                      expect(data).to.be.an('object').like({ body: `Build ${buildId} stopped.` });
 
                       setTimeout(function () {
 
@@ -435,7 +436,7 @@ describe('Node Jenkins API', function () {
                                 jenkins.all_builds(JOB_NAME_TEST, function (error, data) {
                                   log('all_builds', JOB_NAME_TEST, { error, data });
                                   expect(error).to.be.null;
-                                  expect(data).to.be.an('array').that.does.not.contain.something.like({ id: "" + buildId });
+                                  expect(data).to.be.an('array').that.does.not.contain.something.like({ id: `${buildId}` });
 
                                   done();
 
@@ -461,7 +462,7 @@ describe('Node Jenkins API', function () {
   }).timeout(14000);
 
   it('Should build with params', function (done) {
-    var SLEEP_TIME = 123;
+    const SLEEP_TIME = 123;
 
     fs.readFile(TEST_WITH_PARAMS_CONFIG_XML_FILE, 'utf8', function (error, xmlConfig) {
       log('readFile', { error, xmlConfig });
@@ -475,7 +476,7 @@ describe('Node Jenkins API', function () {
           expect(data).to.be.an('object');
           expect(data.queueId).to.be.a('number');
 
-          var queueId = data.queueId;
+          const queueId = data.queueId;
 
           setTimeout(function () {
 
@@ -486,13 +487,13 @@ describe('Node Jenkins API', function () {
               expect(data.executable).to.be.an('object');
               expect(data.executable.number).to.be.a('number');
 
-              var buildId = data.executable.number;
+              const buildId = data.executable.number;
 
               jenkins.console_output(JOB_NAME_NEW, buildId, function (error, data) {
                 log('console_output', JOB_NAME_NEW, buildId, { error, data });
                 expect(error).to.be.null;
                 expect(data).to.be.an('object');
-                expect(data.body).to.be.a('string').that.contains('sleep ' + SLEEP_TIME);
+                expect(data.body).to.be.a('string').that.contains(`sleep ${SLEEP_TIME}`);
 
                 jenkins.delete_job(JOB_NAME_NEW, function (error, data) {
                   log('delete_job', JOB_NAME_NEW, { error, data });
@@ -513,7 +514,7 @@ describe('Node Jenkins API', function () {
   }).timeout(14000);
 
   // Use for onetime tasks do this
-  it('should show a test report', function(done) {
+  it('should show a test report', function (done) {
     fs.readFile(TEST_WITH_REPORT_CONFIG_XML_FILE, 'utf8', function (error, xmlConfig) {
       log('readFile', { error, xmlConfig });
 
@@ -526,7 +527,7 @@ describe('Node Jenkins API', function () {
           expect(data).to.be.an('object');
           expect(data.queueId).to.be.a('number');
 
-          var queueId = data.queueId;
+          const queueId = data.queueId;
 
           setTimeout(function () {
 
@@ -536,11 +537,12 @@ describe('Node Jenkins API', function () {
               expect(data).to.be.an('object').like({ queueId: queueId, result: 'SUCCESS' });
               expect(data.number).to.be.a('number');
 
-              var buildId = data.number;
-              jenkins.test_result(JOB_NAME_REPORT, buildId, function(error, data) {
-                log('test_result', JOB_NAME_REPORT, buildId, {error, data});
+              const buildId = data.number;
+
+              jenkins.test_result(JOB_NAME_REPORT, buildId, function (error, data) {
+                log('test_result', JOB_NAME_REPORT, buildId, { error, data });
                 expect(error).to.be.null;
-                expect(data).to.be.an('object').like({duration: 0.006, empty: false, failCount: 0, passCount: 1, skipCount: 0});
+                expect(data).to.be.an('object').like({ duration: 0.006, empty: false, failCount: 0, passCount: 1, skipCount: 0 });
 
                 jenkins.delete_job(JOB_NAME_REPORT, function (error, data) {
                   log('delete_job', JOB_NAME_REPORT, { error, data });
@@ -556,11 +558,11 @@ describe('Node Jenkins API', function () {
   }).timeout(12000);
 
   // For onetime tasks do this
-  //it.only('should do this', function(done) {
+  // it.only('should do this', function(done) {
   //  jenkins.last_build_report(JOB_NAME_REPORT, function (error, data) {
   //    log(error, data);
   //    done();
   //  }); // queue_item
-  //});
+  // });
 
 });
