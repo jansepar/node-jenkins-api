@@ -116,12 +116,12 @@ jenkins.test_result('job-in-jenkins', 'build-number', (optional) {depth: 1, <par
 });
 ```
 
-#### last build report
+#### last build report - OBSOLET use `last_build_info`
 ```javascript
-jenkins.last_build_report('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
-  if (err){ return console.log(err); }
-  console.log(data)
-});
+// jenkins.last_build_report('job-in-jenkins', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
+//   if (err){ return console.log(err); }
+//   console.log(data)
+// });
 ```
 
 #### delete build data for job

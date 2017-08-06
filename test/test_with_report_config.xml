@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>junit report</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;testsuites&gt;
+   &lt;testsuite name=&quot;JUnitXmlReporter&quot; errors=&quot;0&quot; skipped=&quot;0&quot; tests=&quot;1&quot; failures=&quot;0&quot; time=&quot;0.006&quot; timestamp=&quot;2013-05-24T10:23:58&quot;&gt;
+      &lt;properties&gt;
+         &lt;property name=&quot;java.vendor&quot; value=&quot;Sun Microsystems Inc.&quot; /&gt;
+         &lt;property name=&quot;compiler.debug&quot; value=&quot;on&quot; /&gt;
+         &lt;property name=&quot;project.jdk.classpath&quot; value=&quot;jdk.classpath.1.6&quot; /&gt;
+      &lt;/properties&gt;
+      &lt;testcase classname=&quot;JUnitXmlReporter&quot; name=&quot;should do&quot; time=&quot;0&quot; /&gt;
+   &lt;/testsuite&gt;
+&lt;/testsuites&gt;&apos; &gt; report.xml</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.21">
+      <testResults>*.xml</testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <healthScaleFactor>1.0</healthScaleFactor>
+      <allowEmptyResults>false</allowEmptyResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>

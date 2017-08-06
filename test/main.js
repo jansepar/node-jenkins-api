@@ -17,9 +17,11 @@ var JENKINS_URL = "http://localhost:8080";
 var JOB_NAME_TEST = "asrwqersfdzdraser-test";
 var JOB_NAME_NEW = "asrwqersfdzdraser-test-new";
 var JOB_NAME_COPY = "asrwqersfdzdraser-test-copy";
+var JOB_NAME_REPORT = "asrwqersfdzdraser-test-with-report";
 
 var TEST_CONFIG_XML_FILE = 'test/test_config.xml';
 var TEST_WITH_PARAMS_CONFIG_XML_FILE = 'test/test_with_params_config.xml';
+var TEST_WITH_REPORT_CONFIG_XML_FILE = 'test/test_with_report_config.xml';
 var DEVELOPMENT_PROJECT_XML_CONFIG = '<?xml version="1.0" encoding="UTF-8"?><project><description>development</description></project>';
 var ORIGINAL_DESCRIPTION = 'development';
 var REPLACED_DESCRIPTION = 'feature';
@@ -61,10 +63,10 @@ describe('Node Jenkins API', function () {
             // log('readFile', { error, xmlConfig });
 
             jenkins.create_job(JOB_NAME_TEST, xmlConfig, function (error, data) {
-              log('create_job', JOB_NAME_TEST, { error, data });
+              // log('create_job', JOB_NAME_TEST, { error, data });
 
               jenkins.all_jobs(function (error, data) {
-                log('all_jobs', { error, data });
+                // log('all_jobs', { error, data });
 
                 expect(error).to.be.null;
                 expect(data).to.be.an('array').that.contains.something.like({ name: JOB_NAME_TEST });
@@ -98,7 +100,7 @@ describe('Node Jenkins API', function () {
     expect(jenkins.get_config_xml).to.be.a('function');
 
     jenkins.get_config_xml(JOB_NAME_TEST, function (error, data) {
-      log('get_config_xml', JOB_NAME_NEW, { error, data });
+      log('get_config_xml', JOB_NAME_TEST, { error, data });
       expect(error).to.be.null;
       expect(data).to.be.a('string').that.contains(ORIGINAL_DESCRIPTION);
       done();
@@ -511,11 +513,54 @@ describe('Node Jenkins API', function () {
   }).timeout(14000);
 
   // Use for onetime tasks do this
+  it('should show a test report', function(done) {
+    fs.readFile(TEST_WITH_REPORT_CONFIG_XML_FILE, 'utf8', function (error, xmlConfig) {
+      log('readFile', { error, xmlConfig });
+
+      jenkins.create_job(JOB_NAME_REPORT, xmlConfig, function (error, data) {
+        log('create_job', JOB_NAME_REPORT, { error, data });
+
+        jenkins.build(JOB_NAME_REPORT, function (error, data) {
+          log('build', JOB_NAME_REPORT, { error, data });
+          expect(error).to.be.null;
+          expect(data).to.be.an('object');
+          expect(data.queueId).to.be.a('number');
+
+          var queueId = data.queueId;
+
+          setTimeout(function () {
+
+            jenkins.last_build_info(JOB_NAME_REPORT, function (error, data) {
+              log('last_build_info', JOB_NAME_REPORT, { error, data });
+              expect(error).to.be.null;
+              expect(data).to.be.an('object').like({ queueId: queueId, result: 'SUCCESS' });
+              expect(data.number).to.be.a('number');
+
+              var buildId = data.number;
+              jenkins.test_result(JOB_NAME_REPORT, buildId, function(error, data) {
+                log('test_result', JOB_NAME_REPORT, buildId, {error, data});
+                expect(error).to.be.null;
+                expect(data).to.be.an('object').like({duration: 0.006, empty: false, failCount: 0, passCount: 1, skipCount: 0});
+
+                jenkins.delete_job(JOB_NAME_REPORT, function (error, data) {
+                  log('delete_job', JOB_NAME_REPORT, { error, data });
+                  done();
+
+                }); // delete_job
+              }); // test_result
+            }); // queue_item
+          }, 11000); // setTimeout
+        }); // build_with_params
+      }); // create_job
+    }); // readFile
+  }).timeout(12000);
+
+  // For onetime tasks do this
   //it.only('should do this', function(done) {
-  //  jenkins.get_config_xml(JOB_NAME_TEST, function(error, data) {
-  //    console.log(data);
+  //  jenkins.last_build_report(JOB_NAME_REPORT, function (error, data) {
+  //    log(error, data);
   //    done();
-  //  }); // get_config_xml
+  //  }); // queue_item
   //});
 
 });

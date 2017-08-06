@@ -19,7 +19,7 @@ const LAST_SUCCESS = '/job/%s/lastSuccessfulBuild' + API;
 const TEST_REPORT = '/job/%s/%s/testReport' + API;
 const LAST_BUILD = '/job/%s/lastBuild' + API;
 const LAST_COMPLETED_BUILD = '/job/%s/lastCompletedBuild' + API;
-const LAST_REPORT = '/job/%s/lastBuild' + API;
+//const LAST_REPORT = '/job/%s/lastBuild' + API; //TODO is there url for lastTestReport?
 
 const COMPUTERS = '/computer' + API;
 
@@ -389,13 +389,14 @@ const init = exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get the last build report for a job */
+    /** Get the last build report for a job.
+    * @obsolete Use <code>last_build_info</code> instead.
+    * Probly will make this to return the test result. */
     last_build_report: function (jobName, customParams, callback) {
-            [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
-
-      doRequest({
-        urlPattern: [LAST_REPORT, jobName],
-      }, customParams, callback);
+      this.last_build_info(jobName, customParams, callback);
+    //  doRequest({
+    //    urlPattern: [LAST_REPORT, jobName],
+    //  }, customParams, callback);
     },
 
     /** Deletes build data for certain job */
