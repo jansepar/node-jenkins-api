@@ -307,6 +307,10 @@ exports.init = function (host, defaultOptions, defaultParams) {
      *
      * Return queue location of newly-created job as per
      * https://issues.jenkins-ci.org/browse/JENKINS-12827?focusedCommentId=201381#comment-201381
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
      */
     build: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
@@ -331,7 +335,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** */
+    /**
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     build_with_params: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -355,7 +364,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** */
+    /**
+     *
+     * @param {string} jobName
+     * @param {string} buildNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     stop_build: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
@@ -375,7 +390,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Get the output for a job's build */
+    /**
+     * Get the output for a job's build
+     *
+     * @param {string} jobName
+     * @param {string} buildNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     console_output: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
@@ -385,7 +407,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get information for the last build of a job */
+    /**
+     * Get information for the last build of a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     last_build_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -394,7 +422,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get information for the last completed build of a job */
+    /**
+     * Get information for the last completed build of a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     last_completed_build_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -403,7 +437,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get information for the build number of a job */
+    /**
+     * Get information for the build number of a job
+     *
+     * @param {string} jobName
+     * @param {string} buildNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     build_info: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
@@ -412,7 +453,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get information for the all builds */
+    /**
+     * Get information for the all builds
+     *
+     * @param {string} jobName
+     * @param {string} param
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     all_builds: function (jobName, param, customParams, callback) {
       [jobName, param, customParams, callback] = doArgs(arguments, ['string', ['string', 'id,timestamp,result,duration'], ['object', {}], 'function']);
 
@@ -423,7 +471,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get the test results for the build number of a job */
+    /**
+     * Get the test results for the build number of a job
+     *
+     * @param {string} jobName
+     * @param {string} buildNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     test_result: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
@@ -432,9 +487,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get the last build report for a job.
+    /**
+     * Get the last build report for a job.
      * @obsolete Use <code>last_build_info</code> instead.
-     * Probly will make this to return the test result. */
+     * Probly will make this to return the test result.
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     last_build_report: function (jobName, customParams, callback) {
       this.last_build_info(jobName, customParams, callback);
       //  doRequest({
@@ -442,7 +503,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       //  }, customParams, callback);
     },
 
-    /** Deletes build data for certain job */
+    /**
+     * Deletes build data for certain job
+     *
+     * @param {string} jobName
+     * @param {string} buildNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     delete_build: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
@@ -464,7 +532,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
     |*              Jobs                 *|
     \*************************************/
 
-    /** Return a list of object literals containing the name and color of all jobs on the Jenkins server */
+    /**
+     * Return a list of object literals containing the name and color of all jobs on the Jenkins server
+     *
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     all_jobs: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
@@ -474,7 +547,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get jobs config in xml */
+    /**
+     * Get jobs config in xml
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     get_config_xml: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -491,7 +570,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Update a job config xml by passing it through your modifyFunction. */
+    /**
+     * Update a job config xml by passing it through your modifyFunction.
+     *
+     * @param {string} jobName
+     * @param {function} modifyFunction
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     update_config: function (jobName, modifyFunction, customParams, callback) {
       [jobName, modifyFunction, customParams, callback] = doArgs(arguments, ['string', 'function', ['object', {}], 'function']);
 
@@ -510,7 +596,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Update a existing job based on a jobConfig xml string */
+    /**
+     * Update a existing job based on a jobConfig xml string
+     *
+     * @param {string} jobName
+     * @param {string} jobConfig
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     update_job: function (jobName, jobConfig, customParams, callback) {
       [jobName, jobConfig, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
 
@@ -533,7 +626,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Get all information for a job */
+    /**
+     * Get all information for a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     job_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -542,7 +641,14 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Create a new job based on a jobConfig string */
+    /**
+     * Create a new job based on a jobConfig string
+     *
+     * @param {string} jobName
+     * @param {string} jobConfig
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     create_job: function (jobName, jobConfig, customParams, callback) {
       [jobName, jobConfig, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
 
@@ -568,7 +674,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Copies a job and allows you to pass in a function to modify the configuration of the job you would like to copy */
+    /**
+     * Copies a job and allows you to pass in a function to modify the configuration
+     * of the job you would like to copy
+     *
+     * @param {string} jobName
+     * @param {string} newJobName
+     * @param {function} modifyFunction
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     copy_job: function (jobName, newJobName, modifyFunction, customParams, callback) {
       [jobName, newJobName, modifyFunction, customParams, callback] = doArgs(arguments, ['string', 'string', 'function', ['object', {}], 'function']);
 
@@ -587,7 +702,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Deletes a job */
+    /**
+     * Deletes a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     delete_job: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -604,7 +725,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Disables a job */
+    /**
+     * Disables a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     disable_job: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -623,7 +750,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Enables a job */
+    /**
+     * Enables a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     enable_job: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -642,7 +775,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** Get the last build report for a job */
+    /**
+     * Get the last build report for a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     last_success: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -652,7 +791,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get the last result for a job */
+    /**
+     * Get the last result for a job
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     last_result: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -674,7 +819,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
     |*              Queues               *|
     \*************************************/
 
-    /** Get all queued items */
+    /**
+     * Get all queued items
+     *
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     queue: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
@@ -683,7 +833,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Get one queued item */
+    /**
+     * Get one queued item
+     *
+     * @param {string} queueNumber
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     queue_item: function (queueNumber, customParams, callback) {
       [queueNumber, customParams, callback] = doArgs(arguments, ['string|number', ['object', {}], 'function']);
 
@@ -692,7 +848,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** Cancel a queued item */
+    /**
+     * Cancel a queued item
+     *
+     * @param {string} itemId
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     cancel_item: function (itemId, customParams, callback) {
       [itemId, customParams, callback] = doArgs(arguments, ['string|number', ['object', {}], 'function']);
 
@@ -708,7 +870,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
     |*            Computers              *|
     \*************************************/
 
-    /** Get info about all jenkins workers including currently executing jobs */
+    /**
+     * Get info about all jenkins workers including currently executing jobs
+     *
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     computers: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
@@ -721,7 +888,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
     |*              Views                *|
     \*************************************/
 
-    /** Return a list of all the views on the Jenkins server */
+    /**
+     * Return a list of all the views on the Jenkins server
+     *
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     all_views: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
@@ -731,7 +903,13 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /** */
+    /**
+     *
+     * @param {string} viewName
+     * @param {string|undefined} mode
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     create_view: function (viewName, mode, customParams, callback) {
       [viewName, mode, customParams, callback] = doArgs(arguments, ['string', ['string', 'hudson.model.ListView'], ['object', {}], 'function']);
 
@@ -757,16 +935,27 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** */
-    view_info: function (viewId, customParams, callback) {
-      [viewId, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
+    /**
+     * @param {string} viewName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    view_info: function (viewName, customParams, callback) {
+      [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
       doRequest({
-        urlPattern: [VIEW_INFO, viewId]
+        urlPattern: [VIEW_INFO, viewName]
       }, customParams, callback);
     },
 
-    /** Update a view based on a viewConfig object */
+    /**
+     * Update a view based on a viewConfig object
+     *
+     * @param {string} viewName
+     * @param {object} viewConfig
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     update_view: function (viewName, viewConfig, customParams, callback) {
       [viewName, viewConfig, customParams, callback] = doArgs(arguments, ['string', 'object', ['object', {}], 'function']);
 
@@ -791,7 +980,11 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** */
+    /**
+     * @param {string} viewName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     delete_view: function (viewName, customParams, callback) {
       [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
@@ -808,38 +1001,54 @@ exports.init = function (host, defaultOptions, defaultParams) {
       });
     },
 
-    /** */
-    add_job_to_view: function (viewId, jobName, customParams, callback) {
-      [viewId, jobName, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
+    /**
+     * @param {string} viewName
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    add_job_to_view: function (viewName, jobName, customParams, callback) {
+      [viewName, jobName, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
 
       customParams.name = jobName;
 
       doRequest({
         method: 'POST',
-        urlPattern: [VIEW_ADD_JOB, viewId],
+        urlPattern: [VIEW_ADD_JOB, viewName],
         noparse: true
       }, customParams, callback);
     },
 
-    /** */
-    remove_job_from_view: function (viewId, jobName, customParams, callback) {
-      [viewId, jobName, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
+    /**
+     * @param {string} viewName
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    remove_job_from_view: function (viewName, jobName, customParams, callback) {
+      [viewName, jobName, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
 
       customParams.name = jobName;
 
       doRequest({
         method: 'POST',
-        urlPattern: [VIEW_REMOVE_JOB, viewId],
+        urlPattern: [VIEW_REMOVE_JOB, viewName],
         noparse: true
       }, customParams, callback);
     },
 
-    /* Return a list of objet literals containing the name and color of all the jobs for a view on the Jenkins server */
-    all_jobs_in_view: function (viewId, customParams, callback) {
-      [viewId, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
+    /**
+     * Return a list of objet literals containing the name and color of all the jobs for a view on the Jenkins server
+     *
+     * @param {string} viewName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    all_jobs_in_view: function (viewName, customParams, callback) {
+      [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
       doRequest({
-        urlPattern: [VIEW_INFO, viewId],
+        urlPattern: [VIEW_INFO, viewName],
         bodyProp: 'jobs'
       }, customParams, callback);
     },
@@ -848,7 +1057,12 @@ exports.init = function (host, defaultOptions, defaultParams) {
     |*             Plugins               *|
     \*************************************/
 
-    /* Get all installed plugins */
+    /**
+     * Get all installed plugins
+     *
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
     all_installed_plugins: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
@@ -862,11 +1076,17 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /* Install a plugin */
-    install_plugin: function (plugin, customParams, callback) {
-      [plugin, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
+    /**
+     * Install a plugin
+     *
+     * @param {string} pluginName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    install_plugin: function (pluginName, customParams, callback) {
+      [pluginName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      const body = `<jenkins><install plugin="${plugin}" /></jenkins>`;
+      const body = `<jenkins><install plugin="${pluginName}" /></jenkins>`;
 
       doRequest({
         method: 'POST',
@@ -880,10 +1100,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
       }, customParams, callback);
     },
 
-    /* Create a new folder
-     * Needs Folder plugin in Jenkins: https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Folders+Plugin
-     *  curl -XPOST 'http://jenkins/createItem?name=FolderName&mode=com.cloudbees.hudson.plugins.folder.Folder&from=&json=%7B%22name%22%3A%22FolderName%22%2C%22mode%22%3A%22com.cloudbees.hudson.plugins.folder.Folder%22%2C%22from%22%3A%22%22%2C%22Submit%22%3A%22OK%22%7D&Submit=OK' --user user.name:YourAPIToken -H "Content-Type:application/x-www-form-urlencoded"
-     *  https://gist.github.com/stuart-warren/7786892
+    /**
+     * Create a new folder with given name
+     *
+     * Requires Folder plugin in Jenkins:
+     * @see https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Folders+Plugin
+     * @see https://gist.github.com/stuart-warren/7786892
+     *
+     * @param {string} folderName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
      */
     create_folder: function (folderName, customParams, callback) {
       [folderName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
