@@ -37,6 +37,11 @@ var jenkins = jenkinsapi.init("http://username:password@jenkins.yoursite.com");
 // API Token
 var jenkins = jenkinsapi.init('https://username:token@jenkins.company.com');
 
+// Password that needs to be %-encoded
+const { URL } = require('url');
+const jenkinsUrl = new URL('https://username@jenkins.company.com');
+jenkinsUrl.password = 'some_weirdPASSWORD123!@#$%^&*()~`\\/;\'';
+var jenkins = jenkinsapi.init(jenkinsUrl.href);
 ```
 
 If you need additional request parameters you can add them as explained in 'optional' section.
