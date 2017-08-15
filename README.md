@@ -400,14 +400,14 @@ You can set the default configuration which will be use in all HTTP requests by 
 var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {request: {strictSSL: false}});
 ```
 
-Futhermore, you can set your remote job token for authentication:
+Futhermore, you can set your remote job token for authentication (as well as any other default url params):
 
 ```javascript
 // default request options
-var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {request: {strictSSL: false}}, '<job_token_here>');
+var jenkins = jenkinsapi.init("http://jenkins.yoursite.com", {request: {strictSSL: false}}, {token: '<job_token_here>'});
 ```
 
-Since node-jenkins-api uses [request/request](https://github.com/request/request) as HTTP client, please refer to the documentation for available options.
+Since node-jenkins-api uses [request/request](https://github.com/request/request) as HTTP client, please refer to the documentation for available options. Default values can be found in the source code (search for "default"). 
 
 
 ## Notes
