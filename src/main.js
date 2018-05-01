@@ -47,6 +47,8 @@ const QUEUE_CANCEL_ITEM = `/queue/cancelItem${API}`; // TODO verify this works w
 const PLUGINS = `/pluginManager${API}`;
 const INSTALL_PLUGIN = `/pluginManager/installNecessaryPlugins${API}`;
 
+const ARTIFACT = `/job/%s/%s/artifact/%s`;
+
 const NEWFOLDER = CREATE;
 
 const HTTP_CODE_200 = 200;
@@ -1124,6 +1126,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
         method: 'POST',
         urlPattern: [NEWFOLDER]
       }, customParams, callback);
-    }
+    },
+    /**
+     * Get an artifact associated with a build
+     * @param {string} jobName
+     * @param {string|number} buildNumber
+     * @param {string} relativePath
+     * @param {object|undefined} customParams
+     * @param {function} callback
+     */
+    get_artifact: function (jobName, buildNumber, relativePath, customParams, callback) {
+      [jobName, buildNumber, relativePath, customParams, callback] =
+        doArgs(arguments, ['string', 'string|number', 'string', ['object', {}], 'function']);
+
+      doRequest({
+        urlPattern: [ARTIFACT, jobName, buildNumber, relativePath],
+        noparse: true
+      }, customParams, callback);
+    },
   };
 };
