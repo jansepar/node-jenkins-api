@@ -612,7 +612,7 @@ exports.init = function (host, defaultOptions, defaultParams) {
         urlPattern: [JOB_CONFIG, jobName],
         request: {
           body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
+          headers: { 'Content-Type': 'application/xml;charset=UTF-8'}
         },
         noparse: true
       }, customParams, function (error, data) {
@@ -662,7 +662,7 @@ exports.init = function (host, defaultOptions, defaultParams) {
         urlPattern: [JOB_CREATE],
         request: {
           body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
+          headers: { 'Content-Type': 'application/xml;charset=UTF-8' }
         },
         noparse: true
       }, customParams, function (error, data) {
