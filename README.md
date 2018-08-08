@@ -75,7 +75,7 @@ jenkins.stop_build('job-in-jenkins', 'build-number', (optional){token: 'jenkins-
 
 #### console output
 ```javascript
-jenkins.console_output('job-in-jenkins', 'buildname', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
+jenkins.console_output('job-name', 'job-number', (optional) {depth: 1, <param>:<value>, ...}, function(err, data) {
   if (err){ return console.log(err); }
   console.log(data)
 });
