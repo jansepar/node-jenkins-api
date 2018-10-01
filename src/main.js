@@ -228,6 +228,35 @@ exports.init = function (host, defaultOptions, defaultParams) {
     return url;
   }
 
+  const getCrumb = function (requestOptions, callback) {
+    const urlPattern = ['/crumbIssuer/api/json'];
+    const url = formatUrl.apply(null, urlPattern);
+
+    if (!requestOptions.method === 'POST' && !requestOptions.method === 'DELETE') {
+      return callback();
+    }
+
+    const getCrumbOptions = Object.assign({
+      method: 'GET',
+      url: url,
+      headers: [],
+      followAllRedirects: true,
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    request(getCrumbOptions, function(error, response, body) {
+      if (error || response.statusCode !== HTTP_CODE_200
+        || response.should !== HTTP_CODE_201 || response.should !== HTTP_CODE_302 ) {
+        return callback(null);
+      }
+
+      const getCrumbResponse = JSON.parse(body);
+      const crumb = {};
+
+      crumb[getCrumbResponse.crumbRequestField] = getCrumbResponse.crumb;
+      callback(null, crumb);
+    });
+  };
+
   /**
    * Run the actual HTTP request.
    *
@@ -261,40 +290,54 @@ exports.init = function (host, defaultOptions, defaultParams) {
       body: null
     }, options.request);
 
-    // Do the request
-    request(requestOptions, function (error, response, body) {
-      if (error) {
-        callback(error, response);
+    //  Get Crumb if POST ? DELETE?
+    getCrumb(requestOptions, function (err, crumb) {
+
+      if (err) {
+        callback(err);
         return;
       }
 
-      if ((Array.isArray(options.successStatusCodes) && !options.successStatusCodes.includes(response.statusCode))
-        || (Array.isArray(options.failureStatusCodes) && options.failureStatusCodes.includes(response.statusCode))) {
-        callback(`Server returned unexpected status code: ${response.statusCode}`, response);
-        return;
+      // Do the request
+      if (crumb) {
+        Object.assign(requestOptions.headers, crumb);
       }
 
-      if (options.noparse) {
-        // Wrap body in the response object
-        if (typeof body === 'string') {
-          body = { body: body };
+      request(requestOptions, function (error, response, body) {
+        if (error) {
+          callback(error, response);
+          return;
         }
 
-        // Add location
-        const location = response.headers.Location || response.headers.location;
-
-        if (location) {
-          body.location = location;
+        if ((Array.isArray(options.successStatusCodes) && !options.successStatusCodes.includes(response.statusCode))
+          || (Array.isArray(options.failureStatusCodes) && options.failureStatusCodes.includes(response.statusCode))) {
+          callback(`Server returned unexpected status code: ${response.statusCode}`, response);
+          return;
         }
 
-        // Add status code
-        body.statusCode = response.statusCode;
+        if (options.noparse) {
+          // Wrap body in the response object
+          if (typeof body === 'string') {
+            body = { body: body };
+          }
 
-        callback(null, body);
-      } else {
-        tryParseJson(body, options.bodyProp, callback);
-      }
+          // Add location
+          const location = response.headers.Location || response.headers.location;
+
+          if (location) {
+            body.location = location;
+          }
+
+          // Add status code
+          body.statusCode = response.statusCode;
+
+          callback(null, body);
+        } else {
+          tryParseJson(body, options.bodyProp, callback);
+        }
+      });
     });
+
   };
 
   return {
@@ -636,9 +679,11 @@ exports.init = function (host, defaultOptions, defaultParams) {
     job_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
+      const params = {
         urlPattern: [JOB_INFO, jobName]
-      }, customParams, callback);
+      };
+
+      doRequest(params, customParams, callback);
     },
 
     /**
@@ -842,7 +887,6 @@ exports.init = function (host, defaultOptions, defaultParams) {
      */
     queue_item: function (queueNumber, customParams, callback) {
       [queueNumber, customParams, callback] = doArgs(arguments, ['string|number', ['object', {}], 'function']);
-
       doRequest({
         urlPattern: [QUEUE_ITEM, queueNumber]
       }, customParams, callback);
