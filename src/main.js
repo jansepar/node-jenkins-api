@@ -3,6 +3,7 @@
 const util = require('util');
 const qs = require('querystring');
 const request = require('request');
+const url = require('url');
 
 const API = '/api/json';
 const LIST = API;
@@ -252,8 +253,9 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
     return new Promise(function (resolve, reject) {
       request(requestOptions, function (error, response, body) {
-        if (error) {
-          callback(err);
+        if (response.statusCode != 200) {
+          reject(response.statusMessage);
+          return
         }
 
         var res = {}
@@ -280,7 +282,7 @@ exports.init = function (host, defaultOptions, defaultParams) {
   function handleCrumbFlagAndRequest(customParams, func) {
     var headers = { 'Content-Type': 'application/xml;charset=UTF-8' };
 
-    if (customParams.crumbFlag) {
+    if (customParams.crumbFlag === true) {
       getCrumbData().then(function (crumbData) {
         // console.log(crumbData);
         headers.Cookie = crumbData.JSESSIONID;
@@ -288,6 +290,9 @@ exports.init = function (host, defaultOptions, defaultParams) {
         delete customParams.crumbFlag;
         func(customParams, headers);
       })
+        .catch(function () {
+          console.log("get crumbData failed.")
+        })
     } else {
       func(customParams, headers);
     }
