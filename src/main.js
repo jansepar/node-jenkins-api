@@ -3,6 +3,11 @@
 const util = require('util');
 const qs = require('querystring');
 const request = require('request');
+<<<<<<< HEAD
+const url = require('url');
+=======
+const url = require('url')
+>>>>>>> b20f5de59d576a42b00d6feadcc95a38d6887984
 
 const API = '/api/json';
 const LIST = API;
@@ -228,6 +233,75 @@ exports.init = function (host, defaultOptions, defaultParams) {
     return url;
   }
 
+
+  /**
+   * 获取crumb
+   */
+  function getCrumbData() {
+    var uri = url.parse(host)
+    var authPattern = uri.auth.split(":");
+    var usr = authPattern[0];
+    var psd = authPattern[1];
+
+    var romotePath = "/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)";
+    var path = uri.protocol + "//" + uri.host + romotePath;
+
+    var requestOptions = Object.assign({
+      method: "GET",
+      url: path,
+      headers: {
+        'Authorization': 'basic ' + new Buffer(usr + ':' + psd).toString('base64'),
+        'Accept-Encoding': 'identity',
+      }
+    }, {});
+
+    return new Promise(function (resolve, reject) {
+      request(requestOptions, function (error, response, body) {
+        if (response.statusCode != 200) {
+          reject(response.statusMessage);
+          return
+        }
+
+        var res = {}
+        response.rawHeaders.forEach((value) => {
+          if (value && value.startsWith("JSESSIONID")) {
+            res.JSESSIONID = value.split(";")[0];
+          }
+        })
+
+        if (response.body && response.body.startsWith("Jenkins-Crumb")) {
+          res.crumb = response.body.split(":")[1];
+        }
+        // console.log(res);
+        resolve(res);
+      })
+    })
+  }
+
+  /**
+   * jenkins校验，生成header数据，crumbFlag为true时获取crumb数据和session
+   * @param {*} customParams 
+   * @param {*} func 
+   */
+  function handleCrumbFlagAndRequest(customParams, func) {
+    var headers = { 'Content-Type': 'application/xml;charset=UTF-8' };
+
+    if (customParams.crumbFlag === true) {
+      getCrumbData().then(function (crumbData) {
+        // console.log(crumbData);
+        headers.Cookie = crumbData.JSESSIONID;
+        customParams['Jenkins-Crumb'] = crumbData.crumb;
+        delete customParams.crumbFlag;
+        func(customParams, headers);
+      })
+        .catch(function () {
+          console.log("get crumbData failed.")
+        })
+    } else {
+      func(customParams, headers);
+    }
+  }
+
   /**
    * Run the actual HTTP request.
    *
@@ -315,24 +389,30 @@ exports.init = function (host, defaultOptions, defaultParams) {
     build: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [BUILD_START, jobName],
-        successStatusCodes: [HTTP_CODE_201, HTTP_CODE_302],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [BUILD_START, jobName],
+          successStatusCodes: [HTTP_CODE_201, HTTP_CODE_302],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
 
-        const queueIdRe = /\/queue\/item\/(\d+)/;
-        const id = +queueIdRe.exec(data.location)[1];
+          const queueIdRe = /\/queue\/item\/(\d+)/;
+          const id = +queueIdRe.exec(data.location)[1];
 
-        data.queueId = id;
+          data.queueId = id;
 
-        callback(null, data);
+          callback(null, data);
+        });
       });
+
     },
 
     /**
@@ -344,24 +424,30 @@ exports.init = function (host, defaultOptions, defaultParams) {
     build_with_params: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [BUILD_START_WITHPARAMS, jobName],
-        successStatusCodes: [HTTP_CODE_201, HTTP_CODE_302],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [BUILD_START_WITHPARAMS, jobName],
+          successStatusCodes: [HTTP_CODE_201, HTTP_CODE_302],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
 
-        const queueIdRe = /\/queue\/item\/(\d+)/;
-        const id = +queueIdRe.exec(data.location)[1];
+          const queueIdRe = /\/queue\/item\/(\d+)/;
+          const id = +queueIdRe.exec(data.location)[1];
 
-        data.queueId = id;
+          data.queueId = id;
 
-        callback(null, data);
+          callback(null, data);
+        });
       });
+
     },
 
     /**
@@ -374,20 +460,26 @@ exports.init = function (host, defaultOptions, defaultParams) {
     stop_build: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [BUILD_STOP, jobName, buildNumber],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [BUILD_STOP, jobName, buildNumber],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
 
-        data.body = `Build ${buildNumber} stopped.`;
+          data.body = `Build ${buildNumber} stopped.`;
 
-        callback(null, data);
+          callback(null, data);
+        });
       });
+
     },
 
     /**
@@ -401,10 +493,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
     console_output: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [JOB_OUTPUT, jobName, buildNumber],
-        noparse: true
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [JOB_OUTPUT, jobName, buildNumber],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -417,9 +515,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     last_build_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [LAST_BUILD, jobName]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [LAST_BUILD, jobName],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -432,9 +536,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     last_completed_build_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [LAST_COMPLETED_BUILD, jobName]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [LAST_COMPLETED_BUILD, jobName],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -448,9 +558,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     build_info: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [BUILD_INFO, jobName, buildNumber]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [BUILD_INFO, jobName, buildNumber],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -465,10 +581,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
       [jobName, param, customParams, callback] = doArgs(arguments, ['string', ['string', 'id,timestamp,result,duration'], ['object', {}], 'function']);
 
       // TODO better name and handle the "param" ???
-      doRequest({
-        urlPattern: [ALL_BUILDS, jobName, param],
-        bodyProp: 'allBuilds'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [ALL_BUILDS, jobName, param],
+          bodyProp: 'allBuilds',
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -482,9 +604,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     test_result: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [TEST_REPORT, jobName, buildNumber]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [TEST_REPORT, jobName, buildNumber],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -514,18 +642,24 @@ exports.init = function (host, defaultOptions, defaultParams) {
     delete_build: function (jobName, buildNumber, customParams, callback) {
       [jobName, buildNumber, customParams, callback] = doArgs(arguments, ['string', 'string|number', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [BUILD_DELETE, jobName, buildNumber],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-        } else {
-          data.body = `Build ${buildNumber} deleted.`;
-          callback(null, data);
-        }
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [BUILD_DELETE, jobName, buildNumber],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+          } else {
+            data.body = `Build ${buildNumber} deleted.`;
+            callback(null, data);
+          }
+        });
       });
+
     },
 
     /** ***********************************\
@@ -541,10 +675,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
     all_jobs: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [JOB_LIST],
-        bodyProp: 'jobs'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [JOB_LIST],
+          bodyProp: 'jobs',
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -557,17 +697,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
     get_config_xml: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [JOB_CONFIG, jobName],
-        noparse: true
-      }, customParams, function (error, data) {
-        // Get only the XML response body
-        if (error) {
-          callback(error, data);
-        } else {
-          callback(null, data.body);
-        }
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [JOB_CONFIG, jobName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          // Get only the XML response body
+          if (error) {
+            callback(error, data);
+          } else {
+            callback(null, data.body);
+          }
+        });
       });
+
     },
 
     /**
@@ -607,23 +753,26 @@ exports.init = function (host, defaultOptions, defaultParams) {
     update_job: function (jobName, jobConfig, customParams, callback) {
       [jobName, jobConfig, customParams, callback] = doArgs(arguments, ['string', 'string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [JOB_CONFIG, jobName],
-        request: {
-          body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
-        },
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        // TODO rather return job_info ???
-        // const data = {name: jobName, location: response.headers['Location'] || response.headers['location']};
-        callback(null, { name: jobName });
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [JOB_CONFIG, jobName],
+          request: {
+            body: jobConfig,
+            headers
+          },
+          noparse: true
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          // TODO rather return job_info ???
+          // const data = {name: jobName, location: response.headers['Location'] || response.headers['location']};
+          callback(null, { name: jobName });
+        });
       });
+
     },
 
     /**
@@ -636,9 +785,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     job_info: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [JOB_INFO, jobName]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [JOB_INFO, jobName],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -657,21 +812,24 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const self = this;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [JOB_CREATE],
-        request: {
-          body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
-        },
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        self.job_info(jobName, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [JOB_CREATE],
+          request: {
+            body: jobConfig,
+            headers
+          },
+          noparse: true
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          self.job_info(jobName, customParams, callback);
+        });
       });
+
     },
 
     /**
@@ -712,17 +870,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
     delete_job: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [JOB_DELETE, jobName],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        callback(null, { name: jobName });
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [JOB_DELETE, jobName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          callback(null, { name: jobName });
+        });
       });
+
     },
 
     /**
@@ -737,17 +901,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const self = this;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [JOB_DISABLE, jobName],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        self.job_info(jobName, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [JOB_DISABLE, jobName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          self.job_info(jobName, customParams, callback);
+        });
       });
+
     },
 
     /**
@@ -762,17 +932,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const self = this;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [JOB_ENABLE, jobName],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        self.job_info(jobName, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [JOB_ENABLE, jobName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          self.job_info(jobName, customParams, callback);
+        });
       });
+
     },
 
     /**
@@ -785,10 +961,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
     last_success: function (jobName, customParams, callback) {
       [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [LAST_SUCCESS, jobName]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [LAST_SUCCESS, jobName],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -809,9 +991,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
         const lastResultUrl = data.lastBuild.url;
 
-        doRequest({
-          urlPattern: [lastResultUrl + API, jobName]
-        }, customParams, callback);
+        handleCrumbFlagAndRequest(customParams, function (params, headers) {
+          doRequest({
+            urlPattern: [lastResultUrl + API, jobName],
+            request: {
+              headers
+            }
+          }, params, callback);
+        });
+
       });
     },
 
@@ -828,9 +1016,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     queue: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [QUEUE]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [QUEUE],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -843,9 +1037,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     queue_item: function (queueNumber, customParams, callback) {
       [queueNumber, customParams, callback] = doArgs(arguments, ['string|number', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [QUEUE_ITEM, queueNumber]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [QUEUE_ITEM, queueNumber],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -860,10 +1060,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       customParams.id = itemId;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [QUEUE_CANCEL_ITEM]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [QUEUE_CANCEL_ITEM],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /** ***********************************\
@@ -879,9 +1085,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     computers: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [COMPUTERS]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [COMPUTERS],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /** ***********************************\
@@ -897,10 +1109,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
     all_views: function (customParams, callback) {
       [customParams, callback] = doArgs(arguments, [['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [VIEW_LIST],
-        bodyProp: 'views'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [VIEW_LIST],
+          bodyProp: 'views',
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -919,20 +1137,24 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const self = this;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [VIEW_CREATE],
-        request: {
-          form: formData
-        },
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        self.view_info(viewName, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [VIEW_CREATE],
+          request: {
+            form: formData,
+            headers
+          },
+          noparse: true
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          self.view_info(viewName, customParams, callback);
+        });
       });
+
     },
 
     /**
@@ -943,9 +1165,15 @@ exports.init = function (host, defaultOptions, defaultParams) {
     view_info: function (viewName, customParams, callback) {
       [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [VIEW_INFO, viewName]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [VIEW_INFO, viewName],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -963,21 +1191,24 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const self = this;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [VIEW_CONFIG, viewName],
-        request: {
-          form: viewConfig
-          // headers: {'content-type': 'application/x-www-form-urlencoded'},
-        },
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        self.view_info(viewName, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [VIEW_CONFIG, viewName],
+          request: {
+            form: viewConfig,
+            headers
+          },
+          noparse: true
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          self.view_info(viewName, customParams, callback);
+        });
       });
+
     },
 
     /**
@@ -988,17 +1219,23 @@ exports.init = function (host, defaultOptions, defaultParams) {
     delete_view: function (viewName, customParams, callback) {
       [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [VIEW_DELETE, viewName],
-        noparse: true
-      }, customParams, function (error, data) {
-        if (error) {
-          callback(error, data);
-          return;
-        }
-        callback(null, { name: viewName });
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [VIEW_DELETE, viewName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, function (error, data) {
+          if (error) {
+            callback(error, data);
+            return;
+          }
+          callback(null, { name: viewName });
+        });
       });
+
     },
 
     /**
@@ -1012,11 +1249,17 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       customParams.name = jobName;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [VIEW_ADD_JOB, viewName],
-        noparse: true
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [VIEW_ADD_JOB, viewName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -1030,11 +1273,17 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       customParams.name = jobName;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [VIEW_REMOVE_JOB, viewName],
-        noparse: true
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [VIEW_REMOVE_JOB, viewName],
+          noparse: true,
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -1047,10 +1296,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
     all_jobs_in_view: function (viewName, customParams, callback) {
       [viewName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
 
-      doRequest({
-        urlPattern: [VIEW_INFO, viewName],
-        bodyProp: 'jobs'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [VIEW_INFO, viewName],
+          bodyProp: 'jobs',
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /** ***********************************\
@@ -1068,12 +1323,18 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       customParams.depth = 1;
 
-      doRequest({
-        urlPattern: [PLUGINS],
-        failureStatusCodes: [HTTP_CODE_302],
-        noparse: true,
-        bodyProp: 'plugins'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          urlPattern: [PLUGINS],
+          failureStatusCodes: [HTTP_CODE_302],
+          noparse: true,
+          bodyProp: 'plugins',
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -1088,16 +1349,20 @@ exports.init = function (host, defaultOptions, defaultParams) {
 
       const body = `<jenkins><install plugin="${pluginName}" /></jenkins>`;
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [INSTALL_PLUGIN],
-        request: {
-          body: body,
-          headers: { 'Content-Type': 'text/xml' }
-        },
-        noparse: true,
-        bodyProp: 'plugins'
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        headers['Content-Type'] = 'text/xml';
+        doRequest({
+          method: 'POST',
+          urlPattern: [INSTALL_PLUGIN],
+          request: {
+            body: body,
+            headers
+          },
+          noparse: true,
+          bodyProp: 'plugins'
+        }, params, callback);
+      });
+
     },
 
     /**
@@ -1120,10 +1385,16 @@ exports.init = function (host, defaultOptions, defaultParams) {
       customParams.mode = mode;
       customParams.Submit = 'OK';
 
-      doRequest({
-        method: 'POST',
-        urlPattern: [NEWFOLDER]
-      }, customParams, callback);
+      handleCrumbFlagAndRequest(customParams, function (params, headers) {
+        doRequest({
+          method: 'POST',
+          urlPattern: [NEWFOLDER],
+          request: {
+            headers
+          }
+        }, params, callback);
+      });
+
     }
   };
 };
